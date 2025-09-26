@@ -25,42 +25,61 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-import XCTest
-
+import System
+import Testing
 @testable import SwiftSVG
 
-class IndentifiableTests: XCTestCase {
-    func testShapeElementSetsLayerName() {
-        let testShapeElement = TestShapeElement()
-        testShapeElement.identify(identifier: "id-to-check")
-        XCTAssert(testShapeElement.svgLayer.name == "id-to-check", "Expected \"id-to-check\", got: \(String(describing: testShapeElement.svgLayer.name))")
-    }
+@Suite final class TestFileTests {
+	@Test func shapeElementSetsLayerName() async throws {
+		let testShapeElement = TestShapeElement()
+		testShapeElement.identify(identifier: "id-to-check")
+		XCTAssert(testShapeElement.svgLayer.name == "id-to-check", "Expected \"id-to-check\", got: \(String(describing: testShapeElement.svgLayer.name))")
+	}
 
-    func testEndToEnd() {
-        guard let resourceURL = Bundle(for: type(of: self)).url(forResource: "simple-rectangle", withExtension: "svg") else {
-            XCTAssert(false, "Couldn't find resource")
-            return
-        }
+	@Test(arguments: ["simple-rectangle.svg"])
+	func testEndToEnd(filename: String) async throws {
+		let resourceURL = try filePathURL(from: "simple-rectangle.svg")
+		let asData = try! Data(contentsOf: resourceURL)
+		await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+			Task { @MainActor in
+				_ = UIView(svgData: asData) { svgLayer in
+					defer { continuation.resume() }
+					guard let rootLayerName = svgLayer.sublayers?[0].name else {
+						Issue.record("Root layer name is nil")
+						return
+					}
 
-        let asData = try! Data(contentsOf: resourceURL)
-        let expectation = expectation(description: "Identifiable expectation")
-        _ = UIView(svgData: asData) { svgLayer in
-            guard let rootLayerName = svgLayer.sublayers?[0].name else {
-                return
-            }
-            guard rootLayerName == "root-rectangle-id" else {
-                return
-            }
+					#expect(rootLayerName == "root-rectangle-id", "Root layer name should be 'root-rectangle-id'")
 
-            guard let innerID = svgLayer.sublayers?[0].sublayers?[0].name else {
-                return
-            }
-            guard innerID == "inner-rectangle-id" else {
-                return
-            }
-            expectation.fulfill()
-        }
+					guard let innerID = svgLayer.sublayers?[0].sublayers?[0].name else {
+						Issue.record("Inner layer name is nil")
+						return
+					}
 
-        waitForExpectations(timeout: 3, handler: nil)
-            }
-    }
+					#expect(innerID == "inner-rectangle-id", "Inner layer name should be 'inner-rectangle-id'")
+				}
+			}
+		}
+	}
+
+	func filePathURL(from filename: String) throws -> URL {
+		let filenamePath = FilePath(filename)
+		guard let filePath = Bundle.module.path(
+			forResource: filenamePath.stem,
+			ofType: filenamePath.extension,
+			inDirectory: "TestFiles"
+		) else {
+			Issue.record("Bundle path not found (\(filename))")
+			throw BundleError(kind: .resourceNotFound)
+		}
+
+		return URL(fileURLWithPath: filePath)
+	}
+}
+
+struct BundleError: Error {
+	enum ErrorKind {
+		case resourceNotFound
+	}
+	let kind: ErrorKind
+}

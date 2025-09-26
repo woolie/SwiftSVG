@@ -20,7 +20,8 @@ let package = Package(
         .testTarget(
             name: "SwiftSVGTests",
             dependencies: ["SwiftSVG"],
-            path: "SwiftSVGTests"
+            path: "SwiftSVGTests",
+			resources: [.copy("TestFiles")]
         ),
     ],
     swiftLanguageVersions: [.v5]

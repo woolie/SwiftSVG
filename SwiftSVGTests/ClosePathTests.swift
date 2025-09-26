@@ -27,7 +27,7 @@
 //  THE SOFTWARE.
 
 import Testing
-import XCTest
+import Foundation
 @testable import SwiftSVG
 
 @Suite final class PathTests {
@@ -66,18 +66,16 @@ import XCTest
 		}
 		print("path: \(path.cgPath)")
 	}
-}
 
-// This test is invalid in that closing a path puts back the startingpoint as a moveTo after the close.
-// Needs a fixin'
-class ClosePathTests: XCTestCase {
-    func testClosePath() {
+	// ClosePath will restore the startingPoint, hence `MoveTo(parameters: [20, -30]...`
+	@Test func closePathLastElement() async throws {
         let testPath = UIBezierPath()
         _ = MoveTo(parameters: [20, -30], pathType: .absolute, path: testPath)
         _ = ClosePath(parameters: [], pathType: .absolute, path: testPath)
 		let pathElements = testPath.cgPath.pointsAndTypes
         let lastPointAndType = pathElements.last!
-        XCTAssert(lastPointAndType.1 == .closeSubpath, "Expected .closeSubpath, got \(lastPointAndType.1)")
-        XCTAssert(lastPointAndType.0.x.isNaN == true && lastPointAndType.0.y.isNaN == true, "Expected NaN, NaN, got \(lastPointAndType.0)")
+
+		#expect(lastPointAndType.1 == .moveToPoint, "Expected .moveToPoint, got \(lastPointAndType.1)")
+		#expect(lastPointAndType.0.x.isNaN != true && lastPointAndType.0.y.isNaN != true, "Expected NaN, NaN, got \(lastPointAndType.0)")
     }
 }
