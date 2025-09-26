@@ -15,7 +15,7 @@ let package = Package(
         .target(
             name: "SwiftSVG",
             dependencies: [],
-            path: "SwiftSVG"
+            path: "Source"
         ),
         .testTarget(
             name: "SwiftSVGTests",
