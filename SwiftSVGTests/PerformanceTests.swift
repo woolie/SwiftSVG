@@ -27,15 +27,23 @@
 //  THE SOFTWARE.
 
 import XCTest
+import System
 @testable import SwiftSVG
 
 class PerformanceTests: XCTestCase {
     func testSwiftSVG() {
         measureMetrics([XCTPerformanceMetric.wallClockTime], automaticallyStartMeasuring: true) {
-            guard let resourceURL = Bundle(for: type(of: self)).url(forResource: "ukulele", withExtension: "svg") else {
-                XCTAssert(false, "Couldn't find resource")
-                return
-            }
+			let filenamePath = FilePath("simple-rectangle.svg")
+			guard let filePath = Bundle.module.path(
+				forResource: filenamePath.stem,
+				ofType: filenamePath.extension,
+				inDirectory: "TestFiles"
+			) else {
+				XCTAssert(false, "Bundle path not found \"simple-rectangle.svg\"")
+				return
+			}
+
+            let resourceURL = URL(filePath: filePath)
 
             let asData = try! Data(contentsOf: resourceURL)
             let expect = self.expectation(description: "SwiftSVG expectation")
@@ -48,5 +56,5 @@ class PerformanceTests: XCTestCase {
                 self.stopMeasuring()
             }
         }
-                    }
+	}
 }

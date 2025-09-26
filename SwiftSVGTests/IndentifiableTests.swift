@@ -27,13 +27,14 @@
 
 import System
 import Testing
+import Foundation
 @testable import SwiftSVG
 
 @Suite final class TestFileTests {
 	@Test func shapeElementSetsLayerName() async throws {
 		let testShapeElement = TestShapeElement()
 		testShapeElement.identify(identifier: "id-to-check")
-		XCTAssert(testShapeElement.svgLayer.name == "id-to-check", "Expected \"id-to-check\", got: \(String(describing: testShapeElement.svgLayer.name))")
+		#expect(testShapeElement.svgLayer.name == "id-to-check", "Expected \"id-to-check\", got: \(String(describing: testShapeElement.svgLayer.name))")
 	}
 
 	@Test(arguments: ["simple-rectangle.svg"])
@@ -70,16 +71,13 @@ import Testing
 			inDirectory: "TestFiles"
 		) else {
 			Issue.record("Bundle path not found (\(filename))")
-			throw BundleError(kind: .resourceNotFound)
+			throw BundleError.resourceNotFound
 		}
 
 		return URL(fileURLWithPath: filePath)
 	}
 }
 
-struct BundleError: Error {
-	enum ErrorKind {
-		case resourceNotFound
-	}
-	let kind: ErrorKind
+enum BundleError: Error {
+	case resourceNotFound
 }
