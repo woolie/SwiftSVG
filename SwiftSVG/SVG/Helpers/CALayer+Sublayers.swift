@@ -26,38 +26,33 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-
-
 #if os(iOS) || os(tvOS)
     import UIKit
 #elseif os(OSX)
     import AppKit
 #endif
 
-
 /**
  Helper functions that make it easier to find and work with sublayers
  */
-extension CALayer {
-    
+public extension CALayer {
     /**
      Helper function that applies the given closure on all sublayers of a given type
      */
-    open func applyOnSublayers<T: CALayer>(ofType: T.Type, closure: (T) -> ()) {
-        _ = self.sublayers(in: self).map(closure)
+	func applyOnSublayers<T: CALayer>(ofType: T.Type, closure: (T) -> Void) {
+        _ = sublayers(in: self).map(closure)
     }
 
     /**
      Helper function that returns an array of all sublayers of a given type
      */
-    public func sublayers<T: CALayer, U>(in layer: T) -> [U] {
-        
+    func sublayers<U>(in layer: some CALayer) -> [U] {
         var sublayers = [U]()
-        
+
         guard let allSublayers = layer.sublayers else {
             return sublayers
         }
-        
+
         for thisSublayer in allSublayers {
             sublayers += self.sublayers(in: thisSublayer)
             if let thisSublayer = thisSublayer as? U {

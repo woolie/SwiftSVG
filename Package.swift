@@ -1,10 +1,10 @@
-// swift-tools-version:5.0
+// swift-tools-version:5.9
 
 import PackageDescription
 
 let package = Package(
     name: "SwiftSVG",
-    platforms: [.macOS(.v10_14), .iOS(.v8), .tvOS(.v9)],
+    platforms: [.macOS(.v14), .iOS(.v8), .tvOS(.v9)],
     products: [
         .library(
             name: "SwiftSVG",

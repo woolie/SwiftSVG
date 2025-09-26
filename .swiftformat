@@ -1,0 +1,17 @@
+--indent tabs
+--tabwidth 4
+
+--modifierorder public,private,static,private(set)
+
+--decimalgrouping 3
+
+--enable isEmpty
+--disable preferKeyPath
+--disable trailingCommas
+--disable blankLinesAroundMark
+--disable consecutiveSpaces
+--disable unusedArguments
+--disable redundantFileprivate
+--disable wrapMultilineStatementBraces
+--disable wrapArguments
+--disable indent

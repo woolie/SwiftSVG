@@ -26,20 +26,16 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-
-
 import XCTest
 
 class FloatingPointDegreesToRadiansTests: XCTestCase {
-    
     func testToRadians() {
-        let degrees: Double = 180.0
+        let degrees = 180.0
         XCTAssert(degrees.toRadians == Double.pi, "Expected pi, got \(degrees.toRadians)")
     }
-    
+
     func testToDegrees() {
-        let radians: Double = Double.pi
+        let radians = Double.pi
         XCTAssert(radians.toDegrees == 180, "Expected 180, got \(radians.toDegrees)")
     }
-    
-}
+    }

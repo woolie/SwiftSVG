@@ -26,8 +26,6 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-
-
 #if os(iOS) || os(tvOS)
     import UIKit
 #elseif os(OSX)
@@ -39,20 +37,19 @@
  */
 
 struct SVGPolygon: SVGShapeElement {
-    
     /// :nodoc:
-    internal static let elementName = "polygon"
-    
+    static let elementName = "polygon"
+
     /// :nodoc:
-    internal var supportedAttributes: [String : (String) -> ()] = [:]
-    
+    var supportedAttributes: [String: (String) -> Void] = [:]
+
     /// :nodoc:
-    internal var svgLayer = CAShapeLayer()
-    
+    var svgLayer = CAShapeLayer()
+
     /**
      Function that parses a coordinate string and creates a polygon path
      */
-    internal func points(points: String) {
+    func points(points: String) {
         let polylinePath = UIBezierPath()
         for (index, thisPoint) in CoordinateLexer(coordinateString: points).enumerated() {
             if index == 0 {
@@ -62,14 +59,14 @@ struct SVGPolygon: SVGShapeElement {
             }
         }
         polylinePath.close()
-        self.svgLayer.path = polylinePath.cgPath
+        svgLayer.path = polylinePath.cgPath()
     }
-    
+
     /// :nodoc:
-    internal func didProcessElement(in container: SVGContainerElement?) {
-        guard let container = container else {
+    func didProcessElement(in container: SVGContainerElement?) {
+        guard let container else {
             return
         }
-        container.containerLayer.addSublayer(self.svgLayer)
+        container.containerLayer.addSublayer(svgLayer)
     }
 }

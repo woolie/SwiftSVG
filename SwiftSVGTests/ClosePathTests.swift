@@ -26,19 +26,58 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-
-
+import Testing
 import XCTest
+@testable import SwiftSVG
 
+@Suite final class PathTests {
+	@Test func closePath() async throws {
+		let path = UIBezierPath()
+		path.move(to: CGPoint(x: 1.0, y: 1.0))
+		path.line(to: CGPoint(x: 2.0, y: 2.0))
+		path.move(to: CGPoint(x: 3.0, y: 3.0))
+		path.close()
+		path.move(to: CGPoint(x: 4.0, y: 4.0))
+		path.line(to: CGPoint(x: 2.0, y: 2.0))
+		path.move(to: CGPoint(x: 1.0, y: 1.0))
+		path.line(to: CGPoint(x: 2.0, y: 2.0))
+		path.close()
+
+		path.cgPath.applyWithBlock { elementPointer in
+			let element = elementPointer.pointee
+			let type = element.type
+
+			var points: [CGPoint] = []
+			let pointsPointer = element.points
+
+			switch type {
+			case .moveToPoint, .addLineToPoint:
+				points = [pointsPointer[0]]
+			case .addQuadCurveToPoint:
+				points = [pointsPointer[0], pointsPointer[1]]
+			case .addCurveToPoint:
+				points = [pointsPointer[0], pointsPointer[1], pointsPointer[2]]
+			case .closeSubpath:
+				points = []
+			@unknown default:
+				points = []
+			}
+			print("type: \(type), point: \(points)")
+		}
+		print("path: \(path.cgPath)")
+	}
+}
+
+// This test is invalid in that closing a path puts back the startingpoint as a moveTo after the close.
+// Needs a fixin'
 class ClosePathTests: XCTestCase {
-
     func testClosePath() {
         let testPath = UIBezierPath()
-        _ = MoveTo(parameters: [20, -30], pathType: .absolute, path:testPath)
-        _ = ClosePath(parameters: [], pathType: .absolute, path:testPath)
-        let lastPointAndType = testPath.cgPath.pointsAndTypes.last!
+        _ = MoveTo(parameters: [20, -30], pathType: .absolute, path: testPath)
+        _ = ClosePath(parameters: [], pathType: .absolute, path: testPath)
+		let pathElements = testPath.cgPath.pointsAndTypes
+        let lastPointAndType = pathElements.last!
         XCTAssert(lastPointAndType.1 == .closeSubpath, "Expected .closeSubpath, got \(lastPointAndType.1)")
         XCTAssert(lastPointAndType.0.x.isNaN == true && lastPointAndType.0.y.isNaN == true, "Expected NaN, NaN, got \(lastPointAndType.0)")
     }
-
 }

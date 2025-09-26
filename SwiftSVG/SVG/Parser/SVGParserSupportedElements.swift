@@ -1,5 +1,5 @@
 //
-//  SVGParserConfiguration.swift
+//  SVGParserSupportedElements.swift
 //  SwiftSVG
 //
 //
@@ -26,41 +26,37 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-
-
 import Foundation
 
 /**
  A struct that lists all the supported elements and attributes for a parser
  */
 public struct SVGParserSupportedElements {
-    
     /**
      Typealias that serves as a placeholder for a closure that returns a new `SVGElement` instance
      */
     public typealias ElementGenerator = () -> SVGElement
-    
+
     /**
      A dictionary of all the supported elements and attributes for a given parser.
      - Parameter Key: A string that matches the SVG attribute
      - Parameter Value: A curried function to use to handle the particular attribute
      */
-    public let tags: [String : ElementGenerator]
-    
+    public let tags: [String: ElementGenerator]
+
     /**
      Initializer to create your own set of supported tags
      - Parameter tags: Dictionary of SVG tag name keys and a closure values return an `SVGElement`
      */
-    public init(tags: [String : ElementGenerator]) {
+    public init(tags: [String: ElementGenerator]) {
         self.tags = tags
     }
-    
+
     /**
      A configuration that will only parse `<path>` elements and the `d` and `fill attributes`. Use this configuration if you know you will only be parsing `<path>` elements with fill colors
      */
     public static var barebones: SVGParserSupportedElements {
-        
-        let supportedElements: [String : ElementGenerator] = [
+        let supportedElements: [String: ElementGenerator] = [
             SVGPath.elementName: {
                 let returnElement = SVGPath()
                 returnElement.supportedAttributes = [
@@ -70,17 +66,17 @@ public struct SVGParserSupportedElements {
                 return returnElement
             },
             SVGRootElement.elementName: {
-                return SVGRootElement()
+                SVGRootElement()
             }
         ]
         return SVGParserSupportedElements(tags: supportedElements)
     }
-    
+
     /**
      A configuration that is the full set of elements and attributes that SwiftSVG supports. This is the default configuration for the `NSXMLSVGParser`.
      */
     public static var allSupportedElements: SVGParserSupportedElements {
-        let supportedElements: [String : ElementGenerator] = [
+        let supportedElements: [String: ElementGenerator] = [
             SVGCircle.elementName: {
                 let returnElement = SVGCircle()
                 returnElement.supportedAttributes = [
@@ -198,10 +194,7 @@ public struct SVGParserSupportedElements {
                 returnElement.supportedAttributes.add(returnElement.identityAttributes)
                 return returnElement
             }
-            
-        ]
+            ]
         return SVGParserSupportedElements(tags: supportedElements)
     }
-    
-}
-
+    }

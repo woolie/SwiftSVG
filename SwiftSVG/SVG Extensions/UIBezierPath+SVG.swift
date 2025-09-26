@@ -26,8 +26,6 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-
-
 #if os(iOS) || os(tvOS)
     import UIKit
 #elseif os(OSX)
@@ -39,7 +37,6 @@
  */
 
 public extension UIBezierPath {
-    
     /**
      Parses a single path string. Parses synchronously.
      - Parameter pathString: The path `d` string to parse.
@@ -56,12 +53,11 @@ public extension UIBezierPath {
         self.init()
         #endif
     }
-    
+
     /// :nodoc:
     @available(*, deprecated, message: "This method is deprecated. If you want to parse a single path, instantiate a new instance of SVGPath using the SVGPath(singlePathString:) initializer and pass the path string.")
     class func pathWithSVGURL(_ SVGURL: URL) -> UIBezierPath? {
-        assert(false, "This method is deprecated")
+        assertionFailure("This method is deprecated")
         return nil
     }
-    
-}
+    }

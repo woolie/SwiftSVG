@@ -26,8 +26,6 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-
-
 #if os(iOS) || os(tvOS)
 import UIKit
 #elseif os(OSX)
@@ -38,40 +36,34 @@ import AppKit
  A struct that represents named colors as listed [here](https://www.w3.org/TR/SVGColor12/#icccolor)
  */
 struct NamedColors {
-    
     /// Dictionary of named colors
-    private let fromJSON: [String : CGColor] = {
-        guard let colorDictionary: [String : String] = Dictionary(jsonFile: "cssColorNames") else {
+    private let fromJSON: [String: CGColor] = {
+        guard let colorDictionary: [String: String] = Dictionary(jsonFile: "cssColorNames") else {
             return [:]
         }
         return colorDictionary
-            .compactMapValues({ (hexString) -> CGColor? in
+            .compactMapValues { hexString -> CGColor? in
                 guard let asColor = UIColor(hexString: hexString)?.cgColor else {
                     return nil
                 }
                 return asColor
-            })
+            }
     }()
-    
+
     /// Subscript to access the named color. Must be one of the officially supported values listed [here](https://www.w3.org/TR/SVGColor12/#icccolor)
     subscript(index: String) -> CGColor? {
-        return self.fromJSON[index]
+        fromJSON[index]
     }
 }
 
-
-public extension CGColor {
-    
+fileprivate extension CGColor {
     /**
      Lazily loaded instance of `NamedColors`
      */
-    fileprivate static var named: NamedColors = {
-        return NamedColors()
-    }()
+    static var named: NamedColors = .init()
 }
 
 public extension UIColor {
-    
     /**
      Convenience initializer that creates a new UIColor based on a 3 or 6 digit hex string, integer functional, or named string.
      - Parameter svgString: A hex, integer functional, or named string
@@ -82,33 +74,32 @@ public extension UIColor {
             self.init(hexString: svgString)
             return
         }
-        
+
         if svgString.hasPrefix("rgb") {
             self.init(rgbString: svgString)
             return
         }
-        
+
         if svgString.hasPrefix("rgba") {
             self.init(rgbaString: svgString)
             return
         }
-        
+
         self.init(cssName: svgString)
     }
-    
+
     /**
      Convenience initializer that creates a new UIColor based on a 3, 4, 6, or 8 digit hex string. The leading `#` character is optional
      - Parameter hexString: A 3, 4, 6, or 8 digit hex string
      */
     internal convenience init?(hexString: String) {
-        
         var workingString = hexString
         if workingString.hasPrefix("#") {
             workingString = String(workingString.dropFirst())
         }
         workingString = workingString.lowercased()
         let colorArray: [CGFloat]
-        
+
         if workingString.count == 3 {
             guard let asInt = UInt16(workingString, radix: 16) else {
                 return nil
@@ -138,10 +129,10 @@ public extension UIColor {
             guard let asInt = UInt32(workingString, radix: 16) else {
                 return nil
             }
-            let red = CGFloat((asInt & 0xFF000000) >> 24) / 255
-            let green = CGFloat((asInt & 0x00FF0000) >> 16) / 255
-            let blue = CGFloat((asInt & 0x0000FF00) >> 8) / 255
-            let alpha = CGFloat(asInt & 0x000000FF) / 255
+            let red = CGFloat((asInt & 0xFF00_0000) >> 24) / 255
+            let green = CGFloat((asInt & 0x00FF_0000) >> 16) / 255
+            let blue = CGFloat((asInt & 0x0000_FF00) >> 8) / 255
+            let alpha = CGFloat(asInt & 0x0000_00FF) / 255
             colorArray = [red, green, blue, alpha]
         } else {
             return nil
@@ -151,7 +142,7 @@ public extension UIColor {
         }
         self.init(red: colorArray[0], green: colorArray[1], blue: colorArray[2], alpha: colorArray[3])
     }
-    
+
     /**
      Convenience initializer that creates a new UIColor from a integer functional, taking the form `rgb(rrr, ggg, bbb)`
      */
@@ -159,7 +150,7 @@ public extension UIColor {
         let valuesString = rgbString.dropFirst(4).dropLast()
         self.init(colorValuesString: valuesString)
     }
-    
+
     /**
      Convenience initializer that creates a new UIColor from an integer functional, taking the form `rgba(rrr, ggg, bbb, <alphavalue>)`
      */
@@ -167,17 +158,17 @@ public extension UIColor {
         let valuesString = rgbaString.dropFirst(5).dropLast()
         self.init(colorValuesString: valuesString)
     }
-    
+
     /// :nodoc:
     private convenience init(colorValuesString: Substring) {
         let colorsArray = colorValuesString
             .split(separator: ",")
-            .map { (numberString) -> CGFloat in
+            .map { numberString -> CGFloat in
                 return CGFloat(String(numberString).trimmingCharacters(in: CharacterSet.whitespaces))!
             }
-        self.init(red: colorsArray[0] / 255.0, green: colorsArray[1] / 255.0, blue: colorsArray[2] / 255.0, alpha: (colorsArray.count > 3 ? colorsArray[3] / 1.0 : 1.0))
+        self.init(red: colorsArray[0] / 255.0, green: colorsArray[1] / 255.0, blue: colorsArray[2] / 255.0, alpha: colorsArray.count > 3 ? colorsArray[3] / 1.0 : 1.0)
     }
-    
+
     /**
      Convenience initializer that creates a new UIColor from a CSS3 named color
      - SeeAlso: See here for all the colors: [https://www.w3.org/TR/css3-color/#svg-color](https://www.w3.org/TR/css3-color/#svg-color)
@@ -188,8 +179,4 @@ public extension UIColor {
         }
         self.init(cgColor: namedColor)
     }
-    
-    
-}
-
-
+        }

@@ -26,20 +26,16 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-
-
 #if os(iOS) || os(tvOS)
     import UIKit
 #elseif os(OSX)
     import AppKit
 #endif
 
-
 /**
  A struct that maps `<path>` d commands to `SVGElement`s
  */
-internal struct PathDConstants {
-    
+enum PathDConstants {
     /**
      Valid path letters that can be used in the path d string
      */
@@ -69,11 +65,11 @@ internal struct PathDConstants {
         case space = 32
         case point = 46
     }
-    
+
     /**
      A dictionary that generates a new `PathCommand` based on the `CChar` value of the SVG path letter
      */
-    static let characterDictionary: [CChar : PathCommand] = [
+    static let characterDictionary: [CChar: PathCommand] = [
         DCharacter.M.rawValue: MoveTo(pathType: .absolute),
         DCharacter.m.rawValue: MoveTo(pathType: .relative),
         DCharacter.C.rawValue: CurveTo(pathType: .absolute),
@@ -93,123 +89,120 @@ internal struct PathDConstants {
         DCharacter.T.rawValue: SmoothQuadraticCurveTo(pathType: .absolute),
         DCharacter.t.rawValue: SmoothQuadraticCurveTo(pathType: .relative),
     ]
-    
-}
+    }
 
 /**
  A struct that conforms to the `Sequence` protocol that takes a `<path>` `d` string and returns `SVGElement` instances
  */
-internal struct PathDLexer: IteratorProtocol, Sequence {
-    
+struct PathDLexer: IteratorProtocol, Sequence {
     /**
      Generates a `PathCommand`
      */
     typealias Element = PathCommand
-    
+
     /// :nodoc:
     private var currentCharacter: CChar {
-        return self.workingString[self.iteratorIndex]
+        workingString[iteratorIndex]
     }
-    
+
     /// :nodoc:
-    private var currentCommand: PathCommand? = nil
-    
+    private var currentCommand: PathCommand?
+
     /// :nodoc:
     private var iteratorIndex: Int = 0
-    
+
     /// :nodoc:
     private var numberArray = [CChar]()
-    
+
     /// :nodoc:
     private let pathString: String
-    
+
     /// :nodoc:
     private let workingString: ContiguousArray<CChar>
-    
+
     /**
      Initializer for creating a new `PathDLexer` from a path d string
      */
-    internal init(pathString: String) {
+    init(pathString: String) {
         self.pathString = pathString
-        self.workingString = self.pathString.utf8CString
+        workingString = self.pathString.utf8CString
     }
-    
+
     /**
      Required by Swift's `IteratorProtocol` that returns a new `PathDLexer`
      */
-    internal func makeIterator() -> PathDLexer {
-        return PathDLexer(pathString: self.pathString)
+    func makeIterator() -> PathDLexer {
+        PathDLexer(pathString: pathString)
     }
-    
+
     /**
      Required by Swift's `IteratorProtocol` that returns the next `PathCommand` or nil if it's at the end of the sequence
      */
-    internal mutating func next() -> Element? {
-        
-        self.currentCommand?.clearBuffer()
-        
-        while self.iteratorIndex < self.workingString.count - 1 {
-            
-            if let command = PathDConstants.characterDictionary[self.currentCharacter] {
-                self.pushCoordinateIfPossible(self.numberArray)
-                self.iteratorIndex += 1
-                
-                if self.currentCommand != nil && self.currentCommand!.canPushCommand {
-                    let returnCommand = self.currentCommand
-                    self.currentCommand = command
+    mutating func next() -> Element? {
+        currentCommand?.clearBuffer()
+
+        while iteratorIndex < workingString.count - 1 {
+            if let command = PathDConstants.characterDictionary[currentCharacter] {
+                pushCoordinateIfPossible(numberArray)
+                iteratorIndex += 1
+
+                if currentCommand != nil, currentCommand!.canPushCommand {
+                    let returnCommand = currentCommand
+                    currentCommand = command
                     return returnCommand
                 } else {
-                    self.currentCommand = command
-                    self.numberArray.removeAll()
+                    currentCommand = command
+                    numberArray.removeAll()
                 }
             }
-            
-            switch self.currentCharacter {
+
+            switch currentCharacter {
             case PathDConstants.DCharacter.comma.rawValue, PathDConstants.DCharacter.space.rawValue:
-                self.pushCoordinateIfPossible(self.numberArray)
-                while (self.currentCharacter == PathDConstants.DCharacter.space.rawValue || self.currentCharacter == PathDConstants.DCharacter.comma.rawValue) && self.iteratorIndex < self.workingString.count {
-                    self.iteratorIndex += 1
+                pushCoordinateIfPossible(numberArray)
+                while currentCharacter == PathDConstants.DCharacter.space.rawValue || currentCharacter == PathDConstants.DCharacter.comma.rawValue, iteratorIndex < workingString.count {
+                    iteratorIndex += 1
                 }
-                if self.currentCommand != nil && self.currentCommand!.canPushCommand {
-                    self.numberArray.removeAll()
-                    return self.currentCommand
+                if currentCommand != nil, currentCommand!.canPushCommand {
+                    numberArray.removeAll()
+                    return currentCommand
                 }
-                
+
             case PathDConstants.DCharacter.sign.rawValue,
-                PathDConstants.DCharacter.point.rawValue where self.numberArray.contains(PathDConstants.DCharacter.point.rawValue):
-                self.pushCoordinateIfPossible(self.numberArray)
-                if self.currentCommand != nil && self.currentCommand!.canPushCommand {
-                    self.numberArray.removeAll()
-                    self.numberArray.append(self.currentCharacter)
-                    self.iteratorIndex += 1
-                    return self.currentCommand
+                PathDConstants.DCharacter.point.rawValue where numberArray.contains(PathDConstants.DCharacter.point.rawValue):
+                pushCoordinateIfPossible(numberArray)
+                if currentCommand != nil, currentCommand!.canPushCommand {
+                    numberArray.removeAll()
+                    numberArray.append(currentCharacter)
+                    iteratorIndex += 1
+                    return currentCommand
                 }
+
             default:
                 break
             }
-            
-            self.numberArray.append(self.currentCharacter)
-            self.iteratorIndex += 1
+
+            numberArray.append(currentCharacter)
+            iteratorIndex += 1
         }
-        if self.currentCommand != nil {
-            self.pushCoordinateIfPossible(self.numberArray)
-            let returnCommand = self.currentCommand
-            self.currentCommand = nil
+        if currentCommand != nil {
+            pushCoordinateIfPossible(numberArray)
+            let returnCommand = currentCommand
+            currentCommand = nil
             return returnCommand
         }
         return nil
     }
-    
+
     /**
      Adds a valid `Double` to the current `PathCommand` if possible
      */
     private mutating func pushCoordinateIfPossible(_ byteArray: [CChar]) {
-        if byteArray.count == 0 {
+        if byteArray.isEmpty {
             return
         }
         if let validCoordinate = Double(byteArray: byteArray) {
-            self.currentCommand?.pushCoordinate(validCoordinate)
-            self.numberArray.removeAll()
+            currentCommand?.pushCoordinate(validCoordinate)
+            numberArray.removeAll()
         }
     }
 }

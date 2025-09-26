@@ -26,14 +26,11 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-
-
 import XCTest
+@testable import SwiftSVG
 
 class SVGPolygonTests: XCTestCase {
-    
     func testElementName() {
         XCTAssert(SVGPolygon.elementName == "polygon", "Expected \"polygon\", got \(SVGPolygon.elementName)")
     }
-    
 }

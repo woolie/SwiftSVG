@@ -25,20 +25,17 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-
 import SwiftSVG
 import UIKit
 
 class ViewController: UIViewController {
-    
-    @IBOutlet weak var svgView: UIView!
+    @IBOutlet var svgView: UIView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        let thisSVGView = UIView(svgNamed: "hawaiiFlowers") { (svgLayer) in
+        let thisSVGView = UIView(svgNamed: "hawaiiFlowers") { svgLayer in
             svgLayer.resizeToFit(self.svgView.bounds)
         }
-        self.svgView.addSubview(thisSVGView)
+        svgView.addSubview(thisSVGView)
     }
 }
-

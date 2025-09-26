@@ -26,8 +26,6 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-
-
 #if os(iOS) || os(tvOS)
     import UIKit
 #elseif os(OSX)
@@ -39,53 +37,49 @@
  */
 
 struct SVGRootElement: SVGContainerElement {
-    
     /// :nodoc:
-    internal static let elementName = "svg"
-    
+    static let elementName = "svg"
+
     // :nodoc:
-    internal var delayedAttributes = [String : String]()
-    
+    var delayedAttributes = [String: String]()
+
     // :nodoc:
-    internal var containerLayer = CALayer()
-    
+    var containerLayer = CALayer()
+
     // :nodoc:
-    internal var supportedAttributes = [String : (String) -> ()]()
-    
+    var supportedAttributes = [String: (String) -> Void]()
+
     /**
      Function that parses a number string and sets the `containerLayer`'s width
      */
-    internal func parseWidth(lengthString: String) {
+    func parseWidth(lengthString: String) {
         if let width = CGFloat(lengthString: lengthString) {
-            self.containerLayer.frame.size.width = width
+            containerLayer.frame.size.width = width
         }
     }
-    
+
     /**
      Function that parses a number string and sets the `containerLayer`'s height
      */
-    internal func parseHeight(lengthString: String) {
+    func parseHeight(lengthString: String) {
         if let height = CGFloat(lengthString: lengthString) {
-            self.containerLayer.frame.size.height = height
+            containerLayer.frame.size.height = height
         }
     }
-    
+
     /// :nodoc:
-    internal func didProcessElement(in container: SVGContainerElement?) {
-        return
-    }
-    
+    func didProcessElement(in container: SVGContainerElement?) {}
+
     /// nodoc:
-    internal func viewBox(coordinates: String) {
+    func viewBox(coordinates: String) {
         let points = coordinates
             .components(separatedBy: CharacterSet(charactersIn: ", "))
-            .compactMap { (thisString) -> Double? in
+            .compactMap { thisString -> Double? in
                return Double(thisString.trimWhitespace())
             }
         guard points.count == 4 else {
             return
         }
-        self.containerLayer.frame = CGRect(x: points[0], y: points[1], width: points[2], height: points[3])
+        containerLayer.frame = CGRect(x: points[0], y: points[1], width: points[2], height: points[3])
     }
 }
-

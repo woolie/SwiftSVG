@@ -26,92 +26,87 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-
-
 #if os(iOS) || os(tvOS)
     import UIKit
 #elseif os(OSX)
     import AppKit
 #endif
 
-
 /**
  Concrete implementation that creates a `CAShapeLayer` from a `<line>` element and its attributes
  */
 
 final class SVGLine: SVGShapeElement {
-    
     /// :nodoc:
-    internal static let elementName = "line"
-    
+    static let elementName = "line"
+
     /**
      The line's end point. Defaults to `CGPoint.zero`
      */
-    internal var end = CGPoint.zero
-    
+    var end = CGPoint.zero
+
     /**
      The line's end point. Defaults to `CGPoint.zero`
      */
-    internal var start = CGPoint.zero
-    
+    var start = CGPoint.zero
+
     /// :nodoc:
-    internal var svgLayer = CAShapeLayer()
-    
+    var svgLayer = CAShapeLayer()
+
     /// :nodoc:
-    internal var supportedAttributes: [String : (String) -> ()] = [:]
-    
+    var supportedAttributes: [String: (String) -> Void] = [:]
+
     /**
      Function parses a number string and sets this line's start `x`
      */
-    internal func x1(x1: String) {
+    func x1(x1: String) {
         guard let x1 = CGFloat(x1) else {
             return
         }
-        self.start.x = x1
+        start.x = x1
     }
-    
+
     /**
      Function parses a number string and sets this line's end `x`
      */
-    internal func x2(x2: String) {
+    func x2(x2: String) {
         guard let x2 = CGFloat(x2) else {
             return
         }
-        self.end.x = x2
+        end.x = x2
     }
-    
+
     /**
      Function parses a number string and sets this line's start `y`
      */
-    internal func y1(y1: String) {
+    func y1(y1: String) {
         guard let y1 = CGFloat(y1) else {
             return
         }
-        self.start.y = y1
+        start.y = y1
     }
-    
+
     /**
      Function parses a number string and sets this line's end `y`
      */
-    internal func y2(y2: String) {
+    func y2(y2: String) {
         guard let y2 = CGFloat(y2) else {
             return
         }
-        self.end.y = y2
+        end.y = y2
     }
-    
+
     /**
      Draws a line from the `startPoint` to the `endPoint`
      */
-    internal func didProcessElement(in container: SVGContainerElement?) {
-        guard let container = container else {
+    func didProcessElement(in container: SVGContainerElement?) {
+        guard let container else {
             return
         }
         let linePath = UIBezierPath()
-        linePath.move(to: self.start)
-        linePath.addLine(to: self.end)
-        self.svgLayer.path = linePath.cgPath
-        container.containerLayer.addSublayer(self.svgLayer)
+        linePath.move(to: start)
+        linePath.addLine(to: end)
+        svgLayer.path = linePath.cgPath()
+        container.containerLayer.addSublayer(svgLayer)
     }
-    
 }

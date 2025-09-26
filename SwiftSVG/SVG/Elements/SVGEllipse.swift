@@ -26,8 +26,6 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-
-
 #if os(iOS) || os(tvOS)
     import UIKit
 #elseif os(OSX)
@@ -38,82 +36,80 @@
  Concrete implementation that creates a `CAShapeLayer` from a `<ellipse>` element and its attributes
  */
 final class SVGEllipse: SVGShapeElement {
-    
     /// :nodoc:
-    internal static let elementName = "ellipse"
-    
+    static let elementName = "ellipse"
+
     /**
      The ellipse's center point. Defaults to `CGRect.zero`
      */
-    internal var ellipseCenter = CGPoint.zero
-    
+    var ellipseCenter = CGPoint.zero
+
     /**
      The ellipse's x radius. Defaults to `CGRect.zero`
      */
-    internal var xRadius: CGFloat = 0
-    
+    var xRadius: CGFloat = 0
+
     /**
      The ellipse's x radius. Defaults to `CGRect.zero`
      */
-    internal var yRadius: CGFloat = 0
-    
+    var yRadius: CGFloat = 0
+
     /// :nodoc:
-    internal var svgLayer = CAShapeLayer()
-    
+    var svgLayer = CAShapeLayer()
+
     /// :nodoc:
-    internal var supportedAttributes: [String : (String) -> ()] = [:]
-    
+    var supportedAttributes: [String: (String) -> Void] = [:]
+
     /**
      Function that parses the number string and sets this instance's x radius
      */
-    internal func xRadius(r: String) {
+    func xRadius(r: String) {
         guard let r = CGFloat(lengthString: r) else {
             return
         }
-        self.xRadius = r
+        xRadius = r
     }
-    
+
     /**
      Function that parses the number string and sets this instance's y radius
      */
-    internal func yRadius(r: String) {
+    func yRadius(r: String) {
         guard let r = CGFloat(lengthString: r) else {
             return
         }
-        self.yRadius = r
+        yRadius = r
     }
-    
+
     /**
      Function that parses the number string and sets this instance's x center
      */
-    internal func xCenter(x: String) {
+    func xCenter(x: String) {
         guard let x = CGFloat(lengthString: x) else {
             return
         }
-        self.ellipseCenter.x = x
+        ellipseCenter.x = x
     }
-    
+
     /**
      Function that parses the number string and sets this instance's y center
      */
-    internal func yCenter(y: String) {
+    func yCenter(y: String) {
         guard let y = CGFloat(lengthString: y) else {
             return
         }
-        self.ellipseCenter.y = y
+        ellipseCenter.y = y
     }
-    
+
     /**
      Function that is called after the ellipse's center and radius have been parsed and set. This function creates the path and sets the internal `SVGLayer`'s path.
      */
-    internal func didProcessElement(in container: SVGContainerElement?) {
-        guard let container = container else {
+    func didProcessElement(in container: SVGContainerElement?) {
+        guard let container else {
             return
         }
-        let ellipseRect = CGRect(x: self.ellipseCenter.x - self.xRadius, y: self.ellipseCenter.y - self.yRadius, width: 2 * self.xRadius, height: 2 * self.yRadius)
+        let ellipseRect = CGRect(x: ellipseCenter.x - xRadius, y: ellipseCenter.y - yRadius, width: 2 * xRadius, height: 2 * yRadius)
         let circlePath = UIBezierPath(ovalIn: ellipseRect)
-        self.svgLayer.path = circlePath.cgPath
-        container.containerLayer.addSublayer(self.svgLayer)
+        svgLayer.path = circlePath.cgPath()
+        container.containerLayer.addSublayer(svgLayer)
     }
-    
-}
+    }

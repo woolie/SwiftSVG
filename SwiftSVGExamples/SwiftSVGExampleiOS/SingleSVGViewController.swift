@@ -1,5 +1,5 @@
 //
-//  ViewSVGViewController.swift
+//  SingleSVGViewController.swift
 //  SwiftSVGExamples
 //
 //  Copyright (c) 2017 Michael Choe
@@ -25,42 +25,33 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-
-
 import SwiftSVG
 import UIKit
 
-
 class SingleSVGViewController: UIViewController {
+    @IBOutlet var canvasView: UIView!
 
-    @IBOutlet weak var canvasView: UIView!
-    
     var svgURL = URL(string: "https://openclipart.org/download/181651/manhammock.svg")
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        self.automaticallyAdjustsScrollViewInsets = false
-        
-        guard let url = self.svgURL else {
+
+        automaticallyAdjustsScrollViewInsets = false
+
+        guard let url = svgURL else {
             return
         }
-        
-        let svgView = UIView(svgURL: url) { (svgLayer) in
+
+        let svgView = UIView(svgURL: url) { svgLayer in
             svgLayer.resizeToFit(self.canvasView.bounds)
         }
         svgView.backgroundColor = UIColor.blue
-        self.canvasView.addSubview(svgView)
+        canvasView.addSubview(svgView)
     }
-
 }
 
 extension SingleSVGViewController: UIScrollViewDelegate {
-    
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-        return self.canvasView
+        canvasView
     }
-    
-}
-
-
+    }

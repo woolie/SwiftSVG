@@ -26,42 +26,41 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-
-
 import Foundation
 
 #if os(iOS) || os(tvOS)
     import UIKit
 #elseif os(OSX)
     import AppKit
+
     public typealias UIView = NSView
     public typealias UIBezierPath = NSBezierPath
     public typealias UIColor = NSColor
 #endif
 
 extension UIView {
-    var nonOptionalLayer:CALayer {
+    var nonOptionalLayer: CALayer {
         #if os(iOS) || os(tvOS)
-            return self.layer
+            return layer
         #elseif os(OSX)
-            if let thisLayer = self.layer {
+            if let thisLayer = layer {
                 let transform = CGAffineTransform(
                     a: 1.0, b: 0.0,
                     c: 0.0, d: -1.0,
-                    tx: 0.0, ty: self.bounds.size.height
+                    tx: 0.0, ty: bounds.size.height
                 )
                 thisLayer.setAffineTransform(transform)
                 return thisLayer
             } else {
-                self.layer = CALayer()
+                layer = CALayer()
                 let transform = CGAffineTransform(
                     a: 1.0, b: 0.0,
                     c: 0.0, d: -1.0,
-                    tx: 0.0, ty: self.bounds.size.height
+                    tx: 0.0, ty: bounds.size.height
                 )
-                self.layer?.setAffineTransform(transform)
-                self.wantsLayer = true
-                return self.layer!
+                layer?.setAffineTransform(transform)
+                wantsLayer = true
+                return layer!
             }
         #endif
     }

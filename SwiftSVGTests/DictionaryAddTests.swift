@@ -26,12 +26,9 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-
-
 import XCTest
 
 class DictionaryMergeTests: XCTestCase {
-    
     var one = [
         "one": "one",
         "two": "two",
@@ -56,28 +53,26 @@ class DictionaryMergeTests: XCTestCase {
         "nineteen": "nineteen",
         "twenty": "twenty",
         ]
-    
+
     func testForEach() {
-        self.measure {
-            self.two.forEach{
+        measure {
+            self.two.forEach {
                 self.one[$0] = $1
             }
         }
     }
-    
+
     func testForIn() {
-        self.measure {
+        measure {
             for (key, value) in self.two {
                 self.one[key] = value
             }
         }
     }
-    
+
     func testMerge() {
-        self.one.add(self.two)
-        XCTAssert(self.one.count == 20, "Expected 20, got \(self.one.count)")
-        XCTAssert(self.one["twenty"] == "twenty", "Expected \"twenty\", got \(self.one["twenty"]!)")
+        one.add(two)
+        XCTAssert(one.count == 20, "Expected 20, got \(one.count)")
+        XCTAssert(one["twenty"] == "twenty", "Expected \"twenty\", got \(one["twenty"]!)")
     }
-    
-    
-}
+        }

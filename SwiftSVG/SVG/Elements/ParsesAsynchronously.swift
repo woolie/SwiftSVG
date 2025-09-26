@@ -26,14 +26,11 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-
-
 #if os(iOS) || os(tvOS)
     import UIKit
 #elseif os(OSX)
     import AppKit
 #endif
-
 
 /**
  A protocol describing an instance that can manage elements that can parse asynchronously. In the `NSXMLSVGParser` implementation, the parser maintains a simple count of pending asynchronous tasks and decrements the count when an element has finished parsing. When the count has reached zero, a completion block is called

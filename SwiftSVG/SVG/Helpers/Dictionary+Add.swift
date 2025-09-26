@@ -26,20 +26,16 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-
-
 import Foundation
-
 
 /**
  An extension that add the elements of one dictionary to another
  */
-extension Dictionary {
-    
+public extension Dictionary {
     /**
      An extension that add the elements of one dictionary to another
      */
-    public mutating func add(_ dictionary: [Key : Value]) {
+    mutating func add(_ dictionary: [Key: Value]) {
         for (key, value) in dictionary {
             self[key] = value
         }

@@ -26,44 +26,40 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-
-
 #if os(iOS) || os(tvOS)
     import UIKit
 #elseif os(OSX)
     import AppKit
 #endif
 
-
-internal enum PathType {
+enum PathType {
     case absolute, relative
 }
 
 /**
  A protocol that describes an instance that can process an individual SVG Element
  */
-internal protocol PathCommand: PreviousCommand {
-    
+protocol PathCommand: PreviousCommand {
     /**
      An array that stores processed coordinates values
      */
     var coordinateBuffer: [Double] { get set }
-    
+
     /**
      The minimum number of coordinates needed to process the path command
      */
     var numberOfRequiredParameters: Int { get }
-    
+
     /**
      The path type, relative or absolute
      */
     var pathType: PathType { get }
-    
+
     /**
      Designated initializer that creates a relative or absolute `PathCommand`
      */
     init(pathType: PathType)
-    
+
     /**
      Once the `numberOfRequiredParameters` has been met, this method will append new path to the passed path
      - Parameter path: The path to append a new path to
@@ -75,66 +71,61 @@ internal protocol PathCommand: PreviousCommand {
 /**
  A protocol that describes an instance that represents an SVGElement right before the current one
  */
-internal protocol PreviousCommand {
-    
+protocol PreviousCommand {
     /**
      An array that stores processed coordinates values
      */
     var coordinateBuffer: [Double] { get }
-    
+
     /**
      The path type, relative or absolute
      */
     var pathType: PathType { get }
 }
 
-internal extension PathCommand {
-    
+extension PathCommand {
     /**
      Default implementation for any `PathCommand` indicating where there are enough coordinates stored to be able to process the `SVGElement`
      */
     var canPushCommand: Bool {
-        if self.numberOfRequiredParameters == 0 {
+        if numberOfRequiredParameters == 0 {
             return true
         }
-        if self.coordinateBuffer.count == 0 {
+        if coordinateBuffer.isEmpty {
             return false
         }
-        if self.coordinateBuffer.count % self.numberOfRequiredParameters == 0 {
+        if coordinateBuffer.count % numberOfRequiredParameters == 0 {
             return true
         }
         return false
     }
-    
+
     /**
      Function that clears the current number buffer
      */
     mutating func clearBuffer() {
-        self.coordinateBuffer.removeAll()
+        coordinateBuffer.removeAll()
     }
-    
+
     /**
      Adds a new coordinate to the buffer
      */
     mutating func pushCoordinate(_ coordinate: Double) {
-        self.coordinateBuffer.append(coordinate)
+        coordinateBuffer.append(coordinate)
     }
-    
+
     /**
      Based on the `PathType` of this PathCommand, this function returns the relative or absolute point
      */
     func pointForPathType(_ point: CGPoint, relativeTo: CGPoint) -> CGPoint {
-        switch self.pathType {
+        switch pathType {
         case .absolute:
-            return point
+            point
         case .relative:
-            return CGPoint(x: point.x + relativeTo.x, y: point.y + relativeTo.y)
+            CGPoint(x: point.x + relativeTo.x, y: point.y + relativeTo.y)
         }
     }
-    
 }
-
-
 
 /////////////////////////////////////////////////////
 //
@@ -143,43 +134,48 @@ internal extension PathCommand {
 /**
  The `PathCommand` that corresponds to the SVG `M` or `m` command
  */
-internal struct MoveTo: PathCommand {
-    
+struct MoveTo: PathCommand {
     /// :nodoc:
-    internal var coordinateBuffer = [Double]()
-    
+    var coordinateBuffer = [Double]()
+
     /// :nodoc:
-    internal let numberOfRequiredParameters = 2
-    
+    let numberOfRequiredParameters = 2
+
     /// :nodoc:
-    internal let pathType: PathType
-    
+    let pathType: PathType
+
     /// :nodoc:
-    internal init(pathType: PathType) {
+    init(pathType: PathType) {
         self.pathType = pathType
     }
-    
+
     /**
-     This will move the current point to `CGPoint(self.coordinateBuffer[0], self.coordinateBuffer[1])`.
-     
+     This will move the current point to `CGPoint(coordinateBuffer[0], coordinateBuffer[1])`.
+
      Sequential MoveTo commands should be treated as LineTos.
-     
+
      From Docs (https://www.w3.org/TR/SVG2/paths.html#PathDataMovetoCommands):
-     
+
      ```
      Start a new sub-path at the given (x,y) coordinates. M (uppercase) indicates that absolute coordinates will follow; m (lowercase) indicates that relative coordinates will follow. If a moveto is followed by multiple pairs of coordinates, the subsequent pairs are treated as implicit lineto commands. Hence, implicit lineto commands will be relative if the moveto is relative, and absolute if the moveto is absolute.
      ```
      */
-    internal func execute(on path: UIBezierPath, previousCommand: PreviousCommand? = nil) {
-        
+    func execute(on path: UIBezierPath, previousCommand: PreviousCommand? = nil) {
         if previousCommand is MoveTo {
-            var implicitLineTo = LineTo(pathType: self.pathType)
-            implicitLineTo.coordinateBuffer = [self.coordinateBuffer[0], self.coordinateBuffer[1]]
+            var implicitLineTo = LineTo(pathType: pathType)
+            implicitLineTo.coordinateBuffer = [coordinateBuffer[0], coordinateBuffer[1]]
             implicitLineTo.execute(on: path)
             return
         }
-        
-        let point = self.pointForPathType(CGPoint(x: self.coordinateBuffer[0], y: self.coordinateBuffer[1]), relativeTo: path.currentPoint)
+
+		let relativePoint = if path.isEmpty {
+			CGPointZero
+		} else {
+			path.currentPoint
+		}
+        let point = pointForPathType(CGPoint(x: coordinateBuffer[0],
+											 y: coordinateBuffer[1]),
+									 relativeTo: relativePoint)
         path.move(to: point)
     }
 }
@@ -187,55 +183,52 @@ internal struct MoveTo: PathCommand {
 /**
  The `PathCommand` that corresponds to the SVG `Z` or `z` command
  */
-internal struct ClosePath: PathCommand {
-    
+struct ClosePath: PathCommand {
     /// :nodoc:
-    internal var coordinateBuffer = [Double]()
-    
+    var coordinateBuffer = [Double]()
+
     /// :nodoc:
-    internal let numberOfRequiredParameters = 0
-    
+    let numberOfRequiredParameters = 0
+
     /// :nodoc:
-    internal var pathType: PathType = .absolute
-    
+    var pathType: PathType = .absolute
+
     /// :nodoc:
-    internal init(pathType: PathType) {
+    init(pathType: PathType) {
         self.pathType = pathType
     }
-    
+
     /**
      Closes the current path
      */
-    internal func execute(on path: UIBezierPath, previousCommand: PreviousCommand? = nil) {
+    func execute(on path: UIBezierPath, previousCommand: PreviousCommand? = nil) {
         path.close()
     }
-    
 }
 
 /**
  The `PathCommand` that corresponds to the SVG `L` or `l` command
  */
-internal struct LineTo: PathCommand {
-    
+struct LineTo: PathCommand {
     /// :nodoc:
-    internal var coordinateBuffer = [Double]()
-    
+    var coordinateBuffer = [Double]()
+
     /// :nodoc:
-    internal let numberOfRequiredParameters = 2
-    
+    let numberOfRequiredParameters = 2
+
     /// :nodoc:
-    internal let pathType: PathType
-    
+    let pathType: PathType
+
     /// :nodoc:
-    internal init(pathType: PathType) {
+    init(pathType: PathType) {
         self.pathType = pathType
     }
-    
+
     /**
      Creates a line from the `path.currentPoint` to point `CGPoint(self.coordinateBuffer[0], coordinateBuffer[1])`
      */
-    internal func execute(on path: UIBezierPath, previousCommand: PreviousCommand? = nil) {
-        let point = self.pointForPathType(CGPoint(x: self.coordinateBuffer[0], y: self.coordinateBuffer[1]), relativeTo: path.currentPoint)
+    func execute(on path: UIBezierPath, previousCommand: PreviousCommand? = nil) {
+        let point = pointForPathType(CGPoint(x: coordinateBuffer[0], y: coordinateBuffer[1]), relativeTo: path.currentPoint)
         path.addLine(to: point)
     }
 }
@@ -243,28 +236,27 @@ internal struct LineTo: PathCommand {
 /**
  The `PathCommand` that corresponds to the SVG `H` or `h` command
  */
-internal struct HorizontalLineTo: PathCommand {
-    
+struct HorizontalLineTo: PathCommand {
     /// :nodoc:
-    internal var coordinateBuffer = [Double]()
-    
+    var coordinateBuffer = [Double]()
+
     /// :nodoc:
-    internal let numberOfRequiredParameters = 1
-    
+    let numberOfRequiredParameters = 1
+
     /// :nodoc:
-    internal let pathType: PathType
-    
+    let pathType: PathType
+
     /// :nodoc:
-    internal init(pathType: PathType) {
+    init(pathType: PathType) {
         self.pathType = pathType
     }
-    
+
     /**
      Adds a horizontal line from the currentPoint to `CGPoint(self.coordinateBuffer[0], path.currentPoint.y)`
      */
-    internal func execute(on path: UIBezierPath, previousCommand: PreviousCommand? = nil) {
-        let x = self.coordinateBuffer[0]
-        let point = (self.pathType == .absolute ? CGPoint(x: CGFloat(x), y: path.currentPoint.y) : CGPoint(x: path.currentPoint.x + CGFloat(x), y: path.currentPoint.y))
+    func execute(on path: UIBezierPath, previousCommand: PreviousCommand? = nil) {
+        let x = coordinateBuffer[0]
+        let point = (pathType == .absolute ? CGPoint(x: CGFloat(x), y: path.currentPoint.y) : CGPoint(x: path.currentPoint.x + CGFloat(x), y: path.currentPoint.y))
         path.addLine(to: point)
     }
 }
@@ -272,28 +264,27 @@ internal struct HorizontalLineTo: PathCommand {
 /**
  The `PathCommand` that corresponds to the SVG `V` or `v` command
  */
-internal struct VerticalLineTo: PathCommand {
-    
+struct VerticalLineTo: PathCommand {
     /// :nodoc:
-    internal var coordinateBuffer = [Double]()
-    
+    var coordinateBuffer = [Double]()
+
     /// :nodoc:
-    internal let numberOfRequiredParameters = 1
-    
+    let numberOfRequiredParameters = 1
+
     /// :nodoc:
-    internal let pathType: PathType
-    
+    let pathType: PathType
+
     /// :nodoc:
-    internal init(pathType: PathType) {
+    init(pathType: PathType) {
         self.pathType = pathType
     }
-    
+
     /**
      Adds a vertical line from the currentPoint to `CGPoint(path.currentPoint.y, self.coordinateBuffer[0])`
      */
-    internal func execute(on path: UIBezierPath, previousCommand: PreviousCommand? = nil) {
-        let y = self.coordinateBuffer[0]
-        let point = (self.pathType == .absolute ? CGPoint(x: path.currentPoint.x, y: CGFloat(y)) : CGPoint(x: path.currentPoint.x, y: path.currentPoint.y + CGFloat(y)))
+    func execute(on path: UIBezierPath, previousCommand: PreviousCommand? = nil) {
+        let y = coordinateBuffer[0]
+        let point = (pathType == .absolute ? CGPoint(x: path.currentPoint.x, y: CGFloat(y)) : CGPoint(x: path.currentPoint.x, y: path.currentPoint.y + CGFloat(y)))
         path.addLine(to: point)
     }
 }
@@ -301,29 +292,28 @@ internal struct VerticalLineTo: PathCommand {
 /**
  The `PathCommand` that corresponds to the SVG `C` or `c` command
  */
-internal struct CurveTo: PathCommand {
-    
+struct CurveTo: PathCommand {
     /// :nodoc:
-    internal var coordinateBuffer = [Double]()
-    
+    var coordinateBuffer = [Double]()
+
     /// :nodoc:
-    internal let numberOfRequiredParameters = 6
-    
+    let numberOfRequiredParameters = 6
+
     /// :nodoc:
-    internal let pathType: PathType
-    
+    let pathType: PathType
+
     /// :nodoc:
-    internal init(pathType: PathType) {
+    init(pathType: PathType) {
         self.pathType = pathType
     }
-    
+
     /**
      Adds a cubic Bezier curve to `path`. The path will end up at `CGPoint(self.coordinateBuffer[4], self.coordinateBuffer[5])`. The control point for `path.currentPoint` will be `CGPoint(self.coordinateBuffer[0], self.coordinateBuffer[1])`. Then controle point for the end point will be CGPoint(self.coordinateBuffer[2], self.coordinateBuffer[3])
      */
-    internal func execute(on path: UIBezierPath, previousCommand: PreviousCommand? = nil) {
-        let startControl = self.pointForPathType(CGPoint(x: self.coordinateBuffer[0], y: self.coordinateBuffer[1]), relativeTo: path.currentPoint)
-        let endControl = self.pointForPathType(CGPoint(x: self.coordinateBuffer[2], y: self.coordinateBuffer[3]), relativeTo: path.currentPoint)
-        let point = self.pointForPathType(CGPoint(x: self.coordinateBuffer[4], y: self.coordinateBuffer[5]), relativeTo: path.currentPoint)
+    func execute(on path: UIBezierPath, previousCommand: PreviousCommand? = nil) {
+        let startControl = pointForPathType(CGPoint(x: coordinateBuffer[0], y: coordinateBuffer[1]), relativeTo: path.currentPoint)
+        let endControl = pointForPathType(CGPoint(x: coordinateBuffer[2], y: coordinateBuffer[3]), relativeTo: path.currentPoint)
+        let point = pointForPathType(CGPoint(x: coordinateBuffer[4], y: coordinateBuffer[5]), relativeTo: path.currentPoint)
         path.addCurve(to: point, controlPoint1: startControl, controlPoint2: endControl)
     }
 }
@@ -331,30 +321,28 @@ internal struct CurveTo: PathCommand {
 /**
  The `PathCommand` that corresponds to the SVG `S` or `s` command
  */
-internal struct SmoothCurveTo: PathCommand {
-    
+struct SmoothCurveTo: PathCommand {
     /// :nodoc:
-    internal var coordinateBuffer = [Double]()
-    
+    var coordinateBuffer = [Double]()
+
     /// :nodoc:
-    internal let numberOfRequiredParameters = 4
-    
+    let numberOfRequiredParameters = 4
+
     /// :nodoc:
-    internal let pathType: PathType
-    
+    let pathType: PathType
+
     /// :nodoc:
-    internal init(pathType: PathType) {
+    init(pathType: PathType) {
         self.pathType = pathType
     }
-    
+
     /**
      Shortcut cubic Bezier curve to that add a new path ending up at `CGPoint(self.coordinateBuffer[0], self.coordinateBuffer[1])` with a single control point in the middle.
      */
-    internal func execute(on path: UIBezierPath, previousCommand: PreviousCommand? = nil) {
-        
-        let point = self.pointForPathType(CGPoint(x: self.coordinateBuffer[2], y: self.coordinateBuffer[3]), relativeTo: path.currentPoint)
-        let controlEnd = self.pointForPathType(CGPoint(x: self.coordinateBuffer[0], y: self.coordinateBuffer[1]), relativeTo: path.currentPoint)
-        
+    func execute(on path: UIBezierPath, previousCommand: PreviousCommand? = nil) {
+        let point = pointForPathType(CGPoint(x: coordinateBuffer[2], y: coordinateBuffer[3]), relativeTo: path.currentPoint)
+        let controlEnd = pointForPathType(CGPoint(x: coordinateBuffer[0], y: coordinateBuffer[1]), relativeTo: path.currentPoint)
+
         let controlStart: CGPoint
         if let previousCurveTo = previousCommand as? CurveTo  {
             switch previousCurveTo.pathType {
@@ -373,7 +361,7 @@ internal struct SmoothCurveTo: PathCommand {
                     y: Double(2.0 * path.currentPoint.y) - (previousCurveTo.coordinateBuffer[3] + oldCurrentPoint.1)
                 )
             }
-        } else if let previousSmoothCurveTo = previousCommand as? SmoothCurveTo{
+        } else if let previousSmoothCurveTo = previousCommand as? SmoothCurveTo {
             switch previousSmoothCurveTo.pathType {
             case .absolute:
                 controlStart = CGPoint(
@@ -400,25 +388,24 @@ internal struct SmoothCurveTo: PathCommand {
 /**
  The `PathCommand` that corresponds to the SVG `Q` or `q` command
  */
-internal struct QuadraticCurveTo: PathCommand {
-    
+struct QuadraticCurveTo: PathCommand {
     /// :nodoc:
-    internal var coordinateBuffer = [Double]()
-    
+    var coordinateBuffer = [Double]()
+
     /// :nodoc:
-    internal let numberOfRequiredParameters = 4
-    
+    let numberOfRequiredParameters = 4
+
     /// :nodoc:
-    internal let pathType: PathType
-    
+    let pathType: PathType
+
     /// :nodoc:
-    internal init(pathType: PathType) {
+    init(pathType: PathType) {
         self.pathType = pathType
     }
-    
-    internal func execute(on path: UIBezierPath, previousCommand: PreviousCommand? = nil) {
-        let controlPoint = self.pointForPathType(CGPoint(x: self.coordinateBuffer[0], y: self.coordinateBuffer[1]), relativeTo: path.currentPoint)
-        let point = self.pointForPathType(CGPoint(x: self.coordinateBuffer[2], y: self.coordinateBuffer[3]), relativeTo: path.currentPoint)
+
+    func execute(on path: UIBezierPath, previousCommand: PreviousCommand? = nil) {
+        let controlPoint = pointForPathType(CGPoint(x: coordinateBuffer[0], y: coordinateBuffer[1]), relativeTo: path.currentPoint)
+        let point = pointForPathType(CGPoint(x: coordinateBuffer[2], y: coordinateBuffer[3]), relativeTo: path.currentPoint)
         path.addQuadCurve(to: point, controlPoint: controlPoint)
     }
 }
@@ -426,29 +413,27 @@ internal struct QuadraticCurveTo: PathCommand {
 /**
  The `PathCommand` that corresponds to the SVG `T` or `t` command
  */
-internal struct SmoothQuadraticCurveTo: PathCommand {
-    
+struct SmoothQuadraticCurveTo: PathCommand {
     /// :nodoc:
-    internal var coordinateBuffer = [Double]()
-    
+    var coordinateBuffer = [Double]()
+
     /// :nodoc:
-    internal let numberOfRequiredParameters = 2
-    
+    let numberOfRequiredParameters = 2
+
     /// :nodoc:
-    internal let pathType: PathType
-    
+    let pathType: PathType
+
     /// :nodoc:
-    internal var previousControlPoint: CGPoint? = nil
-    
+    var previousControlPoint: CGPoint?
+
     /// :nodoc:
-    internal init(pathType: PathType) {
+    init(pathType: PathType) {
         self.pathType = pathType
     }
-    
-    internal func execute(on path: UIBezierPath, previousCommand: PreviousCommand? = nil) {
-        
-        let point = self.pointForPathType(CGPoint(x: self.coordinateBuffer[0], y: self.coordinateBuffer[1]), relativeTo: path.currentPoint)
-        
+
+    func execute(on path: UIBezierPath, previousCommand: PreviousCommand? = nil) {
+        let point = pointForPathType(CGPoint(x: coordinateBuffer[0], y: coordinateBuffer[1]), relativeTo: path.currentPoint)
+
         var controlPoint: CGPoint
         if let previousQuadraticCurveTo = previousCommand as? QuadraticCurveTo  {
             switch previousQuadraticCurveTo.pathType {
@@ -478,24 +463,23 @@ internal struct SmoothQuadraticCurveTo: PathCommand {
  The `PathCommand` that corresponds to the SVG `A` or `a` command
  - TODO: Still needs an implementation
  */
-internal struct EllipticalArc: PathCommand {
-    
+struct EllipticalArc: PathCommand {
     /// :nodoc:
-    internal var coordinateBuffer = [Double]()
-    
+    var coordinateBuffer = [Double]()
+
     /// :nodoc:
-    internal let numberOfRequiredParameters = 2
-    
+    let numberOfRequiredParameters = 2
+
     /// :nodoc:
-    internal let pathType: PathType
-    
+    let pathType: PathType
+
     /// :nodoc:
-    internal init(pathType: PathType) {
+    init(pathType: PathType) {
         self.pathType = pathType
     }
-    
+
     /// :nodoc:
-    internal func execute(on path: UIBezierPath, previousCommand: PreviousCommand? = nil) {
-        assert(false, "Needs Implementation")
+    func execute(on path: UIBezierPath, previousCommand: PreviousCommand? = nil) {
+        assertionFailure("Needs Implementation")
     }
 }

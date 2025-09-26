@@ -26,15 +26,11 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-
-
 #if os(iOS) || os(tvOS)
     import UIKit
 #elseif os(OSX)
     import AppKit
 #endif
-
-
 
 // TODO: Removing IBDesignable support for now seeing there
 // is a bug with using IBDesignables from a framework
@@ -44,31 +40,30 @@
 // https://github.com/Carthage/Carthage/issues/335
 // https://stackoverflow.com/questions/29933691/ibdesignable-from-external-framework
 
-//@IBDesignable
+// @IBDesignable
 
 /**
  A `UIView` subclass that can be used in Interface Builder where you can set the @IBInspectable propert `SVGName` in the side panel. Use the UIView extensions if you want to creates SVG views programmatically.
  */
-open class SVGView : UIView {
-    
+open class SVGView: UIView {
     /**
      The name of the SVG file in the main bundle
      */
     @IBInspectable
     open var svgName: String? {
         didSet {
-            guard let thisName = self.svgName else {
+            guard let thisName = svgName else {
                 return
             }
-            
+
             #if TARGET_INTERFACE_BUILDER
                 let bundle = Bundle(for: type(of: self))
             #else
                 let bundle = Bundle.main
             #endif
-            
+
             if let url = bundle.url(forResource: thisName, withExtension: "svg") {
-                CALayer(svgURL: url) { [weak self] (svgLayer) in
+                CALayer(svgURL: url) { [weak self] svgLayer in
                     self?.nonOptionalLayer.addSublayer(svgLayer)
                 }
             } else if #available(iOS 9.0, tvOS 9.0, OSX 10.11, *) {
@@ -82,17 +77,14 @@ open class SVGView : UIView {
                 }
                 #endif
                 let data = asset.data
-                CALayer(svgData: data) { [weak self] (svgLayer) in
+                CALayer(svgData: data) { [weak self] svgLayer in
                     self?.nonOptionalLayer.addSublayer(svgLayer)
                 }
             }
-      
-        
-        }
+                      }
     }
-    
+
     /// :nodoc:
     @available(*, deprecated, renamed: "svgName")
     open var SVGName: String?
 }
-

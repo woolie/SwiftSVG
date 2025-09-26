@@ -26,17 +26,20 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
+#if os(iOS) || os(tvOS)
+	import UIKit
+#elseif os(OSX)
+	import AppKit
+#endif
 
-
-import UIKit
-
+import CoreGraphics
+@testable import SwiftSVG
 
 extension CGPath {
-    
     var points: [CGPoint] {
         var arrayPoints = [CGPoint]()
-        self.forEach { element in
-            switch (element.type) {
+        for element in self {
+            switch element.type {
             case CGPathElementType.moveToPoint:
                 arrayPoints.append(element.points[0])
             case .addLineToPoint:
@@ -50,15 +53,17 @@ extension CGPath {
                 arrayPoints.append(element.points[2])
             case .closeSubpath:
                 arrayPoints.append(element.points[0])
+			default:
+				fatalError("Unknown CGPathElement")
             }
         }
         return arrayPoints
     }
-    
+
     var pointsAndTypes: [(CGPoint, CGPathElementType)] {
         var arrayPoints = [(CGPoint, CGPathElementType)]()
-        self.forEach { element in
-            switch (element.type) {
+        for element in self {
+            switch element.type {
             case CGPathElementType.moveToPoint:
                 arrayPoints.append((element.points[0], .moveToPoint))
             case .addLineToPoint:
@@ -71,33 +76,126 @@ extension CGPath {
                 arrayPoints.append((element.points[1], .addCurveToPoint))
                 arrayPoints.append((element.points[2], .addCurveToPoint))
             case .closeSubpath:
-                arrayPoints.append((element.points[0], .closeSubpath))
+				arrayPoints.append((CGPoint(x: Double(Float.nan),
+											y: Double(Float.nan)),
+									.closeSubpath))
+			default:
+				fatalError("Unknown CGPathElement")
             }
         }
         return arrayPoints
     }
-    
-    private func forEach(body: @escaping @convention(block) (CGPathElement) -> ()) {
-        typealias Body = @convention(block) (CGPathElement) -> ()
-        let callback: @convention(c) (UnsafeMutableRawPointer, UnsafePointer<CGPathElement>) -> () = { (info, element) in
-            let body = unsafeBitCast(info, to: Body.self)
-            body(element.pointee)
-        }
-        let unsafeBody = unsafeBitCast(body, to: UnsafeMutableRawPointer.self)
-        self.apply(info: unsafeBody, function: unsafeBitCast(callback, to: CGPathApplierFunction.self))
-    }
 }
 
 extension PathCommand {
-    
     init(parameters: [Double], pathType: PathType, path: UIBezierPath, previousCommand: PreviousCommand? = nil) {
         self.init(pathType: pathType)
-        self.coordinateBuffer = parameters
-        self.execute(on: path, previousCommand: previousCommand)
+        coordinateBuffer = parameters
+        execute(on: path, previousCommand: previousCommand)
     }
-    
 }
 
+// MARK: - CGPath Element Structure
+/// A structure representing a single path element with its type and associated points
+public struct CGPathElement {
+	public let type: CGPathElementType
+	public let points: [CGPoint]
 
+	public init(type: CGPathElementType, points: [CGPoint]) {
+		self.type = type
+		self.points = points
+	}
+}
 
+// MARK: - CGPath Sequence Conformance
+extension CGPath: @retroactive Sequence {
+	public typealias Element = CGPathElement
 
+	public func makeIterator() -> CGPathIterator {
+		return CGPathIterator(path: self)
+	}
+}
+
+// MARK: - CGPath Iterator
+public struct CGPathIterator: IteratorProtocol {
+	public typealias Element = CGPathElement
+
+	private let path: CGPath
+	private var elements: [CGPathElement] = []
+	private var currentIndex = 0
+
+	public init(path: CGPath) {
+		self.path = path
+		self.extractElements()
+	}
+
+	public mutating func next() -> CGPathElement? {
+		guard currentIndex < elements.count else { return nil }
+		let element = elements[currentIndex]
+		currentIndex += 1
+		return element
+	}
+
+	private mutating func extractElements() {
+		var pathElements: [CGPathElement] = []
+
+		path.applyWithBlock { elementPointer in
+			let element = elementPointer.pointee
+			let type = element.type
+
+			var points: [CGPoint] = []
+			let pointsPointer = element.points
+
+			switch type {
+			case .moveToPoint, .addLineToPoint:
+				points = [pointsPointer[0]]
+			case .addQuadCurveToPoint:
+				points = [pointsPointer[0], pointsPointer[1]]
+			case .addCurveToPoint:
+				points = [pointsPointer[0], pointsPointer[1], pointsPointer[2]]
+			case .closeSubpath:
+				points = []
+			@unknown default:
+				points = []
+			}
+
+			pathElements.append(CGPathElement(type: type, points: points))
+		}
+
+		self.elements = pathElements
+	}
+}
+
+// MARK: - Convenience Extensions
+extension CGPath {
+	/// Returns an array of all path elements
+	public var pathElements: [CGPathElement] {
+		return Array(self)
+	}
+
+	/// Returns the number of elements in the path
+	public var elementCount: Int {
+		return pathElements.count
+	}
+
+	/// Returns all points in the path as a flat array
+	public var allPoints: [CGPoint] {
+		return flatMap { $0.points }
+	}
+
+	/// Returns only the points that represent actual positions (excluding control points)
+	public var endPoints: [CGPoint] {
+		return compactMap { element in
+			switch element.type {
+			case .moveToPoint, .addLineToPoint:
+				return element.points.first
+			case .addQuadCurveToPoint, .addCurveToPoint:
+				return element.points.last
+			case .closeSubpath:
+				return nil
+			@unknown default:
+				return nil
+			}
+		}
+	}
+}

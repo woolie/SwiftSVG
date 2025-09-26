@@ -26,21 +26,17 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-
-
 import XCTest
+@testable import SwiftSVG
 
 class StackTests: XCTestCase {
-    
-    
-    
     func testCount() {
         var testStack = Stack<Int>()
         testStack.push(1)
         testStack.push(10)
         XCTAssert(testStack.count == 2, "Expected 2, got \(testStack.count)")
     }
-    
+
     func testLast() {
         var testStack = Stack<Float>()
         testStack.push(1.5)
@@ -48,26 +44,26 @@ class StackTests: XCTestCase {
         testStack.push(40.4)
         XCTAssert(testStack.last == 40.4, "Expected 40.4, got \(testStack.last!)")
     }
-    
+
     func testClear() {
         var testStack = Stack<String>()
         testStack.push("Hello")
         testStack.push("There")
         testStack.clear()
-        XCTAssert(testStack.count == 0, "Expected 0, got \(testStack.count)")
+        XCTAssert(testStack.isEmpty, "Expected 0, got \(testStack.count)")
     }
-    
+
     func testIsEmpty() {
         let testStack = Stack<String>()
         XCTAssert(testStack.isEmpty == true, "Expected empty stack, got \(testStack.items)")
     }
-    
+
     func testPush() {
         var testStack = Stack<String>()
         testStack.push("hello")
         XCTAssert(testStack.last == "hello", "Expected \"hello\", got \(testStack.last!)")
     }
-    
+
     func testPop() {
         var testStack = Stack<Character>()
         testStack.push(Character("a"))
@@ -78,5 +74,4 @@ class StackTests: XCTestCase {
         XCTAssert(poppedItem == "d", "Expected d, got \(poppedItem!)")
         XCTAssert(testStack.count == 3, "Expected count of 3, got \(testStack.count)")
     }
-    
-}
+    }

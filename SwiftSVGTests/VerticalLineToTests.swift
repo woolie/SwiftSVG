@@ -26,12 +26,10 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-
-
 import XCTest
+@testable import SwiftSVG
 
 class VerticalLineToTests: XCTestCase {
-
     func testAbsoluteVerticalLineTo() {
         let testPath = UIBezierPath()
         _ = MoveTo(parameters: [10, -20], pathType: .absolute, path: testPath)
@@ -39,7 +37,7 @@ class VerticalLineToTests: XCTestCase {
         let points = testPath.cgPath.points
         XCTAssert(points[1].x == 10 && points[1].y == -128, "Expected {10, -128}, got \(points[1])")
     }
-    
+
     func testRelativeVerticalLineTo() {
         let testPath = UIBezierPath()
         _ = MoveTo(parameters: [10, -20], pathType: .absolute, path: testPath)
@@ -47,5 +45,4 @@ class VerticalLineToTests: XCTestCase {
         let points = testPath.cgPath.points
         XCTAssert(points[1].x == 10 && points[1].y == -148, "Expected {10, -148}, got \(points[1])")
     }
-
 }

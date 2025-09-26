@@ -26,9 +26,6 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-
-
-
 import Foundation
 
 /**
@@ -45,69 +42,61 @@ protocol StackType {
 /**
  A stack data structure
  */
-internal struct Stack<T>: StackType {
+struct Stack<T>: StackType {
     var items = [T]()
-    init() { }
+    init() {}
 }
 
 extension StackType {
-    
     /**
      Default implementation of popping the last element off the stack
      */
     @discardableResult
     mutating func pop() -> StackItem? {
-        guard self.items.count > 0 else {
+        guard !items.isEmpty else {
             return nil
         }
-        return self.items.removeLast()
+        return items.removeLast()
     }
-    
+
     /**
      Push a new element on to the stack
      */
     mutating func push(_ itemToPush: StackItem) {
-        self.items.append(itemToPush)
+        items.append(itemToPush)
     }
-    
+
     /**
      Clear all elements from the stack
      */
     mutating func clear() {
-        self.items.removeAll()
+        items.removeAll()
     }
-    
+
     /**
      Returns the number of elements on the stack
      */
     var count: Int {
-        get {
-            return self.items.count
+            items.count
         }
-    }
-    
+
     /**
      Check whether the stack is empty or not
      */
     var isEmpty: Bool {
-        get {
-            if self.items.count == 0 {
+            if items.isEmpty {
                 return true
             }
             return false
         }
-    }
-    
+
     /**
-     Return the last element on the stack without popping it off the stack. Equivalent to peek in other stack implementations 
+     Return the last element on the stack without popping it off the stack. Equivalent to peek in other stack implementations
      */
     var last: StackItem? {
-        get {
-            if self.isEmpty == false {
-                return self.items.last
+            if isEmpty == false {
+                return items.last
             }
             return nil
         }
     }
-    
-}

@@ -26,8 +26,6 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-
-
 #if os(iOS) || os(tvOS)
     import UIKit
 #elseif os(OSX)
@@ -39,99 +37,98 @@
  */
 
 final class SVGRectangle: SVGShapeElement {
-    
     /// :nodoc:
-    internal static let elementName = "rect"
-    
+    static let elementName = "rect"
+
     /**
      The CGRect for the rectangle
      */
-    internal var rectangleRect = CGRect()
-    
+    var rectangleRect = CGRect()
+
     /// :nodoc:
-    internal var svgLayer = CAShapeLayer()
-    
+    var svgLayer = CAShapeLayer()
+
     /// :nodoc:
-    internal var supportedAttributes: [String : (String) -> ()] = [:]
-    
+    var supportedAttributes: [String: (String) -> Void] = [:]
+
     /**
      The x radius of the corner oval. Defaults to `0`
      */
-    internal var xCornerRadius = CGFloat(0.0)
-    
+    var xCornerRadius = CGFloat(0.0)
+
     /**
      The y radius of the corner oval. Defaults to `0`
      */
-    internal var yCornerRadius = CGFloat(0.0)
-    
+    var yCornerRadius = CGFloat(0.0)
+
     /**
      Function that parses the number string and sets this rectangle's origin x
      */
-    internal func parseX(x: String) {
+    func parseX(x: String) {
         guard let x = CGFloat(x) else {
             return
         }
-        self.rectangleRect.origin.x = x
+        rectangleRect.origin.x = x
     }
-    
+
     /**
      Function that parses the number string and sets this rectangle's origin y
      */
-    internal func parseY(y: String) {
+    func parseY(y: String) {
         guard let y = CGFloat(y) else {
             return
         }
-        self.rectangleRect.origin.y = y
+        rectangleRect.origin.y = y
     }
-    
+
     /**
      Function that parses the number string and sets this rectangle's height
      */
-    internal func rectangleHeight(height: String) {
+    func rectangleHeight(height: String) {
         guard let height = CGFloat(height) else {
             return
         }
-        self.rectangleRect.size.height = height
+        rectangleRect.size.height = height
     }
-    
+
     /**
      Function that parses the number string and sets this rectangle's width
      */
-    internal func rectangleWidth(width: String) {
+    func rectangleWidth(width: String) {
         guard let width = CGFloat(width) else {
             return
         }
-        self.rectangleRect.size.width = width
+        rectangleRect.size.width = width
     }
-    
+
     /**
      Function that parses the number string and sets this rectangle's x corner radius
      */
-    internal func xCornerRadius(xCornerRadius: String) {
+    func xCornerRadius(xCornerRadius: String) {
         guard let xCornerRadius = CGFloat(xCornerRadius) else {
             return
         }
         self.xCornerRadius = xCornerRadius
     }
-    
+
     /**
      Function that parses the number string and sets this rectangle's y corner radius
      */
-    internal func yCornerRadius(yCornerRadius: String) {
+    func yCornerRadius(yCornerRadius: String) {
         guard let yCornerRadius = CGFloat(yCornerRadius) else {
             return
         }
         self.yCornerRadius = yCornerRadius
     }
-    
+
     /**
      Creates a new rectangle path based on the set attributes.
      */
-    internal func didProcessElement(in container: SVGContainerElement?) {
-        guard let container = container else {
+    func didProcessElement(in container: SVGContainerElement?) {
+        guard let container else {
             return
         }
-        
+
         // TODO: There seems to be a bug with UIBezierPath(roundedRect:byRoundingCorners:cornerRadii:)
         // where it will draw an unclosed path if the corner radius is zero, so to get around this
         // you have to check which initializer to use.
@@ -140,21 +137,21 @@ final class SVGRectangle: SVGShapeElement {
         // only rounds the outer border and leaves the inner corners pointed.
         //
         // -Michael Choe 06.28.17
-        
+
         let rectanglePath: UIBezierPath
-        if (self.xCornerRadius > 0 || self.yCornerRadius > 0) {
+        if xCornerRadius > 0 || yCornerRadius > 0 {
             #if os(iOS) || os(tvOS)
-            rectanglePath = UIBezierPath(roundedRect: self.rectangleRect, byRoundingCorners: UIRectCorner.allCorners, cornerRadii: CGSize(width: self.xCornerRadius, height: self.yCornerRadius))
+            rectanglePath = UIBezierPath(roundedRect: rectangleRect, byRoundingCorners: UIRectCorner.allCorners, cornerRadii: CGSize(width: xCornerRadius, height: yCornerRadius))
             #elseif os(OSX)
             // TODO:
             // Should create an extension that duplicates the UIBezierPath initializer
-            rectanglePath = NSBezierPath(roundedRect: self.rectangleRect, xRadius: self.xCornerRadius, yRadius: self.yCornerRadius)
+            rectanglePath = NSBezierPath(roundedRect: rectangleRect, xRadius: xCornerRadius, yRadius: yCornerRadius)
             #endif
-            
+
         } else {
-            rectanglePath = UIBezierPath(rect: self.rectangleRect)
+            rectanglePath = UIBezierPath(rect: rectangleRect)
         }
-        self.svgLayer.path = rectanglePath.cgPath
-        container.containerLayer.addSublayer(self.svgLayer)
+        svgLayer.path = rectanglePath.cgPath()
+        container.containerLayer.addSublayer(svgLayer)
     }
 }

@@ -25,23 +25,25 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-import UIKit
+#if os(iOS) || os(tvOS)
+	import UIKit
+#elseif os(OSX)
+	import AppKit
+#endif
+
+@testable import SwiftSVG
 
 struct TestShapeElement: SVGShapeElement {
     static let elementName: String = "test"
-    var supportedAttributes: [String : (String) -> ()] = [:]
+    var supportedAttributes: [String: (String) -> Void] = [:]
     var svgLayer = CAShapeLayer()
-    
+
     init() {
         let rectPath = UIBezierPath(rect: CGRect(x: 0, y: 0, width: 200, height: 200))
-        self.svgLayer.path = rectPath.cgPath
+        svgLayer.path = rectPath.cgPath
     }
-    
-    func notReal(string: String) {
-        return
-    }
-    
-    func didProcessElement(in container: SVGContainerElement?) {
-        return
-    }
+
+    func notReal(string: String) {}
+
+    func didProcessElement(in container: SVGContainerElement?) {}
 }
