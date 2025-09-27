@@ -50,7 +50,7 @@ public extension SVGLayerType where Self: CALayer {
         let boundingBoxAspectRatio = boundingBox.width / boundingBox.height
         let viewAspectRatio = rect.width / rect.height
 
-        let scaleFactor: CGFloat = if boundingBoxAspectRatio > viewAspectRatio {
+        let scaleFactor = if boundingBoxAspectRatio > viewAspectRatio {
             // Width is limiting factor
             rect.width / boundingBox.width
         } else {

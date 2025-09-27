@@ -78,12 +78,13 @@ public extension NSBezierPath {
                     y: (controlPoint.y - point.y) * (2.0 / 3.0) +  point.y))
     }
 }
+
 #elseif os(iOS) || os(tvOS)
 import UIKit
 
 public extension UIBezierPath {
 	func cgPath() -> CGPath {
-		self.cgPath
+		cgPath
 	}
 }
 #endif

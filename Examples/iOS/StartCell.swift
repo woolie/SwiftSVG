@@ -1,6 +1,6 @@
 //
-//  AppDelegate.swift
-//  SwiftSVGExampleiOS
+//  StartCell.swift
+//  SwiftSVGExamples
 //
 //  Copyright (c) 2017 Michael Choe
 //  http://www.github.com/mchoe
@@ -27,12 +27,7 @@
 
 import UIKit
 
-@main
-class AppDelegate: UIResponder, UIApplicationDelegate {
-	var window: UIWindow?
-
-	func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-		// Override point for customization after application launch.
-		true
-	}
+class StartCell: UITableViewCell {
+    @IBOutlet var titleLabel: UILabel!
+    @IBOutlet var subtitleLabel: UILabel!
 }

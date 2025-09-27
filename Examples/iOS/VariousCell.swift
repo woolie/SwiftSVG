@@ -1,6 +1,6 @@
 //
-//  AppDelegate.swift
-//  SwiftSVGExampleiOS
+//  VariousCell.swift
+//  SwiftSVGExamples
 //
 //  Copyright (c) 2017 Michael Choe
 //  http://www.github.com/mchoe
@@ -27,12 +27,12 @@
 
 import UIKit
 
-@main
-class AppDelegate: UIResponder, UIApplicationDelegate {
-	var window: UIWindow?
+class VariousCell: UICollectionViewCell {
+    @IBOutlet var svgView: UIView!
 
-	func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-		// Override point for customization after application launch.
-		true
-	}
-}
+    override func prepareForReuse() {
+        for thisSublayer in svgView.layer.sublayers! {
+            thisSublayer.removeFromSuperlayer()
+        }
+    }
+    }

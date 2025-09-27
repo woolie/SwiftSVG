@@ -26,6 +26,99 @@
 			);
 			target = E23510522E87429300CAB6A7 /* iOS */;
 		};
+		E237C40F2E875AF20088B042 /* Exceptions for "TestSVGs" folder in "macOS" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				alohaShirt.svg,
+				baseball.svg,
+				berlin.svg,
+				Camel2.svg,
+				circles.svg,
+				decorativeblob.svg,
+				DrawingBoard.svg,
+				Dulcimer.svg,
+				ellipses.svg,
+				error.svg,
+				fistBump.svg,
+				"Fyodor-Dostoevsky.svg",
+				George_Kerr_Anderson_Patent_1885_1.svg,
+				hawaiiFlowers.svg,
+				"johnny-automatic-open-mouth.svg",
+				MedievalBanners.svg,
+				"openclipart-1290111299.svg",
+				"openclipart-1332611679.svg",
+				"openclipart-1346768588.svg",
+				"openclipart-angry-coder.svg",
+				"openclipart-Anonymous_Architetto_--_Bicicletta.svg",
+				"openclipart-Anonymous_Architetto_--_Camello.svg",
+				"openclipart-Anonymous_Architetto_--_Coccinella_04.svg",
+				"openclipart-motivo_geometrico_archit_01.svg",
+				"openclipart-tux.svg",
+				"openclipart-zanzara_architetto_fran_03r.svg",
+				pizza.svg,
+				polygons.svg,
+				polylines.svg,
+				rabbitcowboy.svg,
+				raphaelcruzeiro.svg,
+				rectangles.svg,
+				"simple-rectangle.svg",
+				sockPuppet.svg,
+				tea.svg,
+				tiger.svg,
+				triangle.svg,
+			);
+			target = E23510402E87428300CAB6A7 /* macOS */;
+		};
+		E237C4472E875D460088B042 /* Exceptions for "TestSVGs" folder in "tvOS" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				alohaShirt.svg,
+				baseball.svg,
+				berlin.svg,
+				Camel2.svg,
+				circles.svg,
+				decorativeblob.svg,
+				DrawingBoard.svg,
+				Dulcimer.svg,
+				ellipses.svg,
+				error.svg,
+				fistBump.svg,
+				"Fyodor-Dostoevsky.svg",
+				George_Kerr_Anderson_Patent_1885_1.svg,
+				hawaiiFlowers.svg,
+				"johnny-automatic-open-mouth.svg",
+				MedievalBanners.svg,
+				"openclipart-1290111299.svg",
+				"openclipart-1332611679.svg",
+				"openclipart-1346768588.svg",
+				"openclipart-angry-coder.svg",
+				"openclipart-Anonymous_Architetto_--_Bicicletta.svg",
+				"openclipart-Anonymous_Architetto_--_Camello.svg",
+				"openclipart-Anonymous_Architetto_--_Coccinella_04.svg",
+				"openclipart-motivo_geometrico_archit_01.svg",
+				"openclipart-tux.svg",
+				"openclipart-zanzara_architetto_fran_03r.svg",
+				pizza.svg,
+				polygons.svg,
+				polylines.svg,
+				rabbitcowboy.svg,
+				raphaelcruzeiro.svg,
+				rectangles.svg,
+				"simple-rectangle.svg",
+				sockPuppet.svg,
+				tea.svg,
+				tiger.svg,
+				triangle.svg,
+			);
+			target = E235106B2E8742A300CAB6A7 /* tvOS */;
+		};
+		E237C44C2E87605F0088B042 /* Exceptions for "tvOS" folder in "tvOS" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = E235106B2E8742A300CAB6A7 /* tvOS */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -44,11 +137,21 @@
 		};
 		E235106D2E8742A300CAB6A7 /* tvOS */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				E237C44C2E87605F0088B042 /* Exceptions for "tvOS" folder in "tvOS" target */,
+			);
+			explicitFileTypes = {
+				Info.plist = text.xml;
+			};
 			path = tvOS;
 			sourceTree = "<group>";
 		};
 		E237C39F2E8751510088B042 /* TestSVGs */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				E237C40F2E875AF20088B042 /* Exceptions for "TestSVGs" folder in "macOS" target */,
+				E237C4472E875D460088B042 /* Exceptions for "TestSVGs" folder in "tvOS" target */,
+			);
 			path = TestSVGs;
 			sourceTree = "<group>";
 		};

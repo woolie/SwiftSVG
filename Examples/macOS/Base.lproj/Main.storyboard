@@ -683,7 +683,7 @@
                                     <constraint firstAttribute="width" constant="300" id="Lti-uW-xIh"/>
                                 </constraints>
                                 <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="string" keyPath="SVGName" value="hawaiiFlowers"/>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="svgName" value="hawaiiFlowers"/>
                                 </userDefinedRuntimeAttributes>
                             </customView>
                         </subviews>

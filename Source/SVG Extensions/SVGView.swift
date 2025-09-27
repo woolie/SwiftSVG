@@ -52,9 +52,7 @@ open class SVGView: UIView {
     @IBInspectable
     open var svgName: String? {
         didSet {
-            guard let thisName = svgName else {
-                return
-            }
+            guard let thisName = svgName else { return }
 
             #if TARGET_INTERFACE_BUILDER
                 let bundle = Bundle(for: type(of: self))
@@ -81,7 +79,7 @@ open class SVGView: UIView {
                     self?.nonOptionalLayer.addSublayer(svgLayer)
                 }
             }
-                      }
+		}
     }
 
     /// :nodoc:
