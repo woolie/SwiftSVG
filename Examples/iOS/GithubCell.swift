@@ -1,6 +1,6 @@
 //
 //  GithubCell.swift
-//  SwiftSVGExamples
+//  iOS
 //
 //  Copyright (c) 2017 Michael Choe
 //  http://www.github.com/mchoe
