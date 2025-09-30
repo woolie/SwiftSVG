@@ -59,7 +59,7 @@ public extension NSBezierPath {
 			  controlPoint2: NSPoint(
 				x: (controlPoint.x - point.x) * (2.0 / 3.0) +  point.x,
 				y: (controlPoint.y - point.y) * (2.0 / 3.0) +  point.y))
-    }
+	}
 }
 
 #elseif os(iOS) || os(tvOS)

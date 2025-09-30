@@ -98,6 +98,6 @@ final class SVGPath: SVGShapeElement, ParsesAsynchronously, DelaysApplyingAttrib
 	/// :nodoc:
 	func didProcessElement(in container: SVGContainerElement?) {
 		guard let container else { return }
-        container.containerLayer.addSublayer(svgLayer)
-    }
+		container.containerLayer.addSublayer(svgLayer)
+	}
 }

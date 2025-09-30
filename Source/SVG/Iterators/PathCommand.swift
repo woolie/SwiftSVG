@@ -103,31 +103,31 @@ struct MoveTo: PathCommand {
 		self.pathType = pathType
 	}
 
-    /**
-     This will move the current point to `CGPoint(coordinateBuffer[0], coordinateBuffer[1])`.
-
-     Sequential MoveTo commands should be treated as LineTos.
-
-     From Docs (https://www.w3.org/TR/SVG2/paths.html#PathDataMovetoCommands):
-
-     ```
-     Start a new sub-path at the given (x,y) coordinates. M (uppercase) indicates that absolute coordinates will follow; m (lowercase) indicates that relative coordinates will follow. If a moveto is followed by multiple pairs of coordinates, the subsequent pairs are treated as implicit lineto commands. Hence, implicit lineto commands will be relative if the moveto is relative, and absolute if the moveto is absolute.
-     ```
-     */
-    func execute(on path: UIBezierPath, previousCommand: PreviousCommand? = nil) {
-        if previousCommand is MoveTo {
-            var implicitLineTo = LineTo(pathType: pathType)
-            implicitLineTo.coordinateBuffer = [coordinateBuffer[0], coordinateBuffer[1]]
-            implicitLineTo.execute(on: path)
-            return
-        }
+	///
+	/// This will move the current point to `CGPoint(coordinateBuffer[0], coordinateBuffer[1])`.
+	///
+	/// Sequential MoveTo commands should be treated as LineTos.
+	///
+	/// From Docs (https://www.w3.org/TR/SVG2/paths.html#PathDataMovetoCommands):
+	///
+	/// ```
+	/// Start a new sub-path at the given (x,y) coordinates. M (uppercase) indicates that absolute coordinates will follow; m (lowercase) indicates that relative coordinates will follow. If a moveto is followed by multiple pairs of coordinates, the subsequent pairs are treated as implicit lineto commands. Hence, implicit lineto commands will be relative if the moveto is relative, and absolute if the moveto is absolute.
+	/// ```
+	///
+	func execute(on path: UIBezierPath, previousCommand: PreviousCommand? = nil) {
+		if previousCommand is MoveTo {
+			var implicitLineTo = LineTo(pathType: pathType)
+			implicitLineTo.coordinateBuffer = [coordinateBuffer[0], coordinateBuffer[1]]
+			implicitLineTo.execute(on: path)
+			return
+		}
 
 		let relativePoint = if path.isEmpty {
 			CGPointZero
 		} else {
 			path.currentPoint
 		}
-        let point = pointForPathType(CGPoint(x: coordinateBuffer[0],
+		let point = pointForPathType(CGPoint(x: coordinateBuffer[0],
 											 y: coordinateBuffer[1]),
 									 relativeTo: relativePoint)
 		path.move(to: point)

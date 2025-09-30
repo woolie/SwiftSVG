@@ -19,8 +19,8 @@ public extension CALayer {
 	}
 
 	/// Helper function that returns an array of all sublayers of a given type
-    func sublayers<U>(in layer: some CALayer) -> [U] {
-        var sublayers = [U]()
+	func sublayers<U>(in layer: some CALayer) -> [U] {
+		var sublayers = [U]()
 
 		guard let allSublayers = layer.sublayers else { return sublayers }
 

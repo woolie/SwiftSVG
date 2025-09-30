@@ -9,13 +9,13 @@ import SwiftSVG
 import UIKit
 
 class ViewController: UIViewController {
-    @IBOutlet var svgView: UIView!
+	@IBOutlet var svgView: UIView!
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        let thisSVGView = UIView(svgNamed: "hawaiiFlowers") { svgLayer in
-            svgLayer.resizeToFit(self.svgView.bounds)
-        }
-        svgView.addSubview(thisSVGView)
-    }
+	override func viewDidLoad() {
+		super.viewDidLoad()
+		let thisSVGView = UIView(svgNamed: "hawaiiFlowers") { svgLayer in
+			svgLayer.resizeToFit(self.svgView.bounds)
+		}
+		svgView.addSubview(thisSVGView)
+	}
 }

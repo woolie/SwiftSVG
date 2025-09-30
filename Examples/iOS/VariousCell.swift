@@ -8,11 +8,11 @@
 import UIKit
 
 class VariousCell: UICollectionViewCell {
-    @IBOutlet var svgView: UIView!
+	@IBOutlet var svgView: UIView!
 
-    override func prepareForReuse() {
-        for thisSublayer in svgView.layer.sublayers! {
-            thisSublayer.removeFromSuperlayer()
-        }
-    }
-    }
+	override func prepareForReuse() {
+		for thisSublayer in svgView.layer.sublayers! {
+			thisSublayer.removeFromSuperlayer()
+		}
+	}
+}

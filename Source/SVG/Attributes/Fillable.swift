@@ -88,9 +88,7 @@ extension Fillable where Self: SVGGroup {
 		delayedAttributes["fill-rule"] = fillRule
 	}
 
-    /**
 	/// Sets the fill opacity for all subelements of the `SVGGroup` through its CGColor, not the CALayer's opacity property.
-     */
 	func fillOpacity(_ opacity: String) {
 		delayedAttributes["opacity"] = opacity
 	}
