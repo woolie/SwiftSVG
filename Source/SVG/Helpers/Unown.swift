@@ -9,5 +9,5 @@
 import Foundation
 
 public func unown<T: AnyObject, U, V>(_ owner: T, _ method: @escaping (T) -> ((U) -> V)) -> (U) -> V {
-  { [unowned owner] arg in method(owner)(arg) }
+	{ [unowned owner] arg in method(owner)(arg) }
 }
