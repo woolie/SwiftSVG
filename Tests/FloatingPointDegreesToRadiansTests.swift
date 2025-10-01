@@ -5,16 +5,16 @@
 //  Copyright (c) 2017 Michael Choe
 //
 
-import XCTest
+import Testing
 
-class FloatingPointDegreesToRadiansTests: XCTestCase {
-	func testToRadians() {
+@Suite final class FloatingPointDegreesToRadiansTests {
+	@Test func toRadians() async throws {
 		let degrees = 180.0
-		XCTAssert(degrees.toRadians == Double.pi, "Expected pi, got \(degrees.toRadians)")
+		#expect(degrees.toRadians == Double.pi, "Expected pi, got \(degrees.toRadians)")
 	}
 	
-	func testToDegrees() {
+	@Test func toDegrees() async throws {
 		let radians = Double.pi
-		XCTAssert(radians.toDegrees == 180, "Expected 180, got \(radians.toDegrees)")
+		#expect(radians.toDegrees == 180, "Expected 180, got \(radians.toDegrees)")
 	}
 }

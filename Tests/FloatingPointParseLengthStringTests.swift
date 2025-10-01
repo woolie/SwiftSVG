@@ -6,21 +6,21 @@
 //
 
 @testable import SwiftSVG
-import XCTest
+import Testing
 
-class FloatingPointParseLengthTests: XCTestCase {
-	func testStraightInteger() {
+@Suite final class FloatingPointParseLengthTests {
+	@Test func straightInteger() async throws {
 		let testNumber = Double(lengthString: "78")
-		XCTAssertTrue(testNumber == 78, "Expected 78, got \(testNumber!)")
+		#expect(testNumber == 78, "Expected 78, got \(testNumber!)")
 	}
-	
-	func testPixelAnnotation() {
+
+	@Test func pixelAnnotation() async throws {
 		let testNumber = Double(lengthString: "890px")
-		XCTAssertTrue(testNumber == 890, "Expected 890, got \(testNumber!)")
+		#expect(testNumber == 890, "Expected 890, got \(testNumber!)")
 	}
-	
-	func testUnsupportedSuffix() {
+
+	@Test func unsupportedSuffix() async throws {
 		let testNumber = Float(lengthString: "123em")
-		XCTAssertNil(testNumber, "Expected nil, got \(testNumber!)")
+		#expect(testNumber == nil, "Expected nil, got \(testNumber!)")
 	}
 }
