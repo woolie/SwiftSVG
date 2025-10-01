@@ -21,7 +21,7 @@ import Testing
 		#expect(points[3].x == testPath.currentPoint.x && points[3].y == testPath.currentPoint.y, "Expected {\(testPath.currentPoint)}, got \(points[3])")
 	}
 	
-	@Test func testRelativeCurveTo() async throws {
+	@Test func relativeCurveTo() async throws {
 		let testPath = UIBezierPath()
 		_ = MoveTo(parameters: [10, -20], pathType: .absolute, path: testPath)
 		_ = CurveTo(parameters: [66, 37, 32, -18, 23, 98], pathType: .relative, path: testPath)

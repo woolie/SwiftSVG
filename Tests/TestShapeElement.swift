@@ -23,6 +23,5 @@ struct TestShapeElement: SVGShapeElement {
 	}
 	
 	func notReal(string: String) {}
-	
 	func didProcessElement(in container: SVGContainerElement?) {}
 }

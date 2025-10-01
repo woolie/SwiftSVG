@@ -5,10 +5,10 @@
 //  Copyright (c) 2017 Michael Choe
 
 @testable import SwiftSVG
-import XCTest
+import Testing
 
-class SVGPolylineTests: XCTestCase {
-	func testElementName() {
-		XCTAssert(SVGPolyline.elementName == "polyline", "Expected \"polyline\", got \(SVGPolyline.elementName)")
+@Suite final class SVGPolylineTests {
+	func elementName() {
+		#expect(SVGPolyline.elementName == "polyline", "Expected \"polyline\", got \(SVGPolyline.elementName)")
 	}
 }

@@ -9,7 +9,7 @@
 import Testing
 
 @Suite final class MoveToTests {
-	@Test func testAbsoluteMoveTo() async throws {
+	@Test func absoluteMoveTo() async throws {
 		let testPath = UIBezierPath()
 		_ = MoveTo(parameters: [20, -30], pathType: .absolute, path: testPath)
 		#expect(testPath.currentPoint.x == 20 && testPath.currentPoint.y == -30, "Expected {20, -30}, got \(testPath.currentPoint)")
@@ -18,7 +18,7 @@ import Testing
 		#expect(firstPoint.x == 20 && firstPoint.y == -30, "Expected {20, -30}, got \(firstPoint)")
 	}
 
-	@Test func testRelativeMoveTo() async throws {
+	@Test func relativeMoveTo() async throws {
 		let testPath = UIBezierPath()
 		_ = MoveTo(parameters: [20, -30], pathType: .absolute, path: testPath)
 		_ = LineTo(parameters: [55, -20], pathType: .absolute, path: testPath)
@@ -26,13 +26,13 @@ import Testing
 		#expect(testPath.currentPoint.x == 105 && testPath.currentPoint.y == -30, "Expected {105, -30}, got \(testPath.currentPoint)")
 	}
 
-	@Test func testRelativeFirstMoveToTreatedAsAbsolute() async throws {
+	@Test func relativeFirstMoveToTreatedAsAbsolute() async throws {
 		let testPath = UIBezierPath()
 		_ = MoveTo(parameters: [50, 30], pathType: .relative, path: testPath, previousCommand: nil)
 		#expect(testPath.currentPoint.x == 50 && testPath.currentPoint.y == 30, "Expected {50, 30}, got \(testPath.currentPoint)")
 	}
 
-	@Test func testMultipleMoveToCommands() async throws {
+	@Test func multipleMoveToCommands() async throws {
 		let testPath = UIBezierPath()
 		let moveTo1 = MoveTo(parameters: [10, 20], pathType: .relative, path: testPath)
 		let moveTo2 = MoveTo(parameters: [30, 40], pathType: .relative, path: testPath, previousCommand: moveTo1)

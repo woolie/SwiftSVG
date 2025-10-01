@@ -8,7 +8,7 @@
 import Testing
 
 @Suite final class ScalarFromByteArrayTests {
-	@Test func testByteArray() async throws {
+	@Test func byteArray() async throws {
 		var testArray: [CChar] = [49, 48]
 		var asDouble = Double(byteArray: testArray)!
 		#expect(asDouble == 10, "Expected 10, got \(asDouble)")
@@ -22,7 +22,7 @@ import Testing
 		#expect(asDouble == -6.38, "Expected -6.38, got \(asDouble)")
 	}
 
-	@Test func testInvalidByteArray() async throws {
+	@Test func invalidByteArray() async throws {
 		var testArray: [CChar] = [65, 48]	   // "A0"
 		var asDouble = Double(byteArray: testArray)
 		#expect(asDouble == nil, "Expected nil, got \(String(describing: asDouble))")
@@ -32,13 +32,13 @@ import Testing
 		#expect(asDouble == nil, "Expected nil, got \(String(describing: asDouble))")
 	}
 
-	@Test func testENumber() async throws {
+	@Test func eNumber() async throws {
 		let testArray: [CChar] = [49, 101, 51] // "1e3
 		let asDouble = Double(byteArray: testArray)
 		#expect(asDouble == 1_000, "Double: \(asDouble!)")
 	}
 
-	@Test func testZeroCountArray() async throws {
+	@Test func zeroCountArray() async throws {
 		let testArray = [CChar]()
 		let asDouble = Double(byteArray: testArray)
 		#expect(asDouble == nil, "Expected nil, got \(String(describing: asDouble))")

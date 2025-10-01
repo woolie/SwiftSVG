@@ -5,10 +5,10 @@
 //  Copyright (c) 2017 Michael Choe
 
 @testable import SwiftSVG
-import XCTest
+import Testing
 
-class SVGLineTests: XCTestCase {
-	func testElementName() {
-		XCTAssert(SVGLine.elementName == "line", "Expected \"line\", got \(SVGLine.elementName)")
+@Suite final class SVGLineTests {
+	@Test func testElementName() async throws {
+		#expect(SVGLine.elementName == "line", "Expected \"line\", got \(SVGLine.elementName)")
 	}
 }

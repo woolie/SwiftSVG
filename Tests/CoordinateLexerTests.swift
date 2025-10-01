@@ -10,7 +10,7 @@ import Foundation
 import Testing
 
 @Suite final class IteratorTests {
-	@Test func testWhitespace() async throws {
+	@Test func whitespace() async throws {
 		var testString = " 0,40 40,40 40,80 80,80 80,120 120,120 120,160"
 		var coordinateArray = [CGPoint]()
 		var coordinateSequence = CoordinateLexer(coordinateString: testString)

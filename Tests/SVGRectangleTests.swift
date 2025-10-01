@@ -5,10 +5,10 @@
 //  Copyright (c) 2017 Michael Choe
 
 @testable import SwiftSVG
-import XCTest
+import Testing
 
-class SVGRectangleTests: XCTestCase {
-	func testElementName() {
-		XCTAssert(SVGRectangle.elementName == "rect", "Expected \"rect\", got \(SVGRectangle.elementName)")
+@Suite final class SVGRectangleTests {
+	@Test func elementName() async throws {
+		#expect(SVGRectangle.elementName == "rect", "Expected \"rect\", got \(SVGRectangle.elementName)")
 	}
 }

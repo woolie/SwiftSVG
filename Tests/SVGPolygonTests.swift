@@ -5,10 +5,10 @@
 //  Copyright (c) 2017 Michael Choe
 
 @testable import SwiftSVG
-import XCTest
+import Testing
 
-class SVGPolygonTests: XCTestCase {
-	func testElementName() {
-		XCTAssert(SVGPolygon.elementName == "polygon", "Expected \"polygon\", got \(SVGPolygon.elementName)")
+@Suite final class SVGPolygonTests {
+	@Test func testElementName() async throws {
+		#expect(SVGPolygon.elementName == "polygon", "Expected \"polygon\", got \(SVGPolygon.elementName)")
 	}
 }
